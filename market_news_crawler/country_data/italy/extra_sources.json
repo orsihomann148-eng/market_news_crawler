@@ -1,0 +1,57 @@
+[
+  {
+    "platform": "General Media",
+    "side": "media",
+    "source_url": "https://www.consorzionetcomm.it/",
+    "domain": "www.consorzionetcomm.it",
+    "active": true,
+    "created_at": "2026-05-20T12:22:57.010099+08:00",
+    "updated_at": "2026-05-20T12:22:57.010099+08:00",
+    "deactivated_at": "",
+    "reactivated_at": ""
+  },
+  {
+    "platform": "General Media",
+    "side": "media",
+    "source_url": "https://ecommerce-europe.eu/",
+    "domain": "ecommerce-europe.eu",
+    "active": true,
+    "created_at": "2026-05-20T12:27:19.577540+08:00",
+    "updated_at": "2026-05-20T12:27:19.577540+08:00",
+    "deactivated_at": "",
+    "reactivated_at": ""
+  },
+  {
+    "platform": "General Media",
+    "side": "media",
+    "source_url": "https://us.fashionnetwork.com/",
+    "domain": "us.fashionnetwork.com",
+    "active": true,
+    "created_at": "2026-05-20T12:27:55.706030+08:00",
+    "updated_at": "2026-05-20T12:27:55.706030+08:00",
+    "deactivated_at": "",
+    "reactivated_at": ""
+  },
+  {
+    "platform": "General Media",
+    "side": "media",
+    "source_url": "https://www.ilsole24ore.com/?refresh_ce=1",
+    "domain": "www.ilsole24ore.com",
+    "active": true,
+    "created_at": "2026-05-20T12:28:35.268260+08:00",
+    "updated_at": "2026-05-20T12:28:35.268260+08:00",
+    "deactivated_at": "",
+    "reactivated_at": ""
+  },
+  {
+    "platform": "General Media",
+    "side": "media",
+    "source_url": "https://www.pai.com.cn/",
+    "domain": "www.pai.com.cn",
+    "active": true,
+    "created_at": "2026-05-20T12:29:47.589548+08:00",
+    "updated_at": "2026-05-20T12:29:47.589548+08:00",
+    "deactivated_at": "",
+    "reactivated_at": ""
+  }
+]

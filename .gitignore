@@ -1,0 +1,40 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets and local environment
+.env
+*.key
+*.pem
+Git_sshkey*
+
+# Local application state
+market_news_crawler/web_app_settings.json
+market_news_crawler/news_crawler.db
+market_news_crawler/job_timing_history.json
+market_news_crawler/article_star_store.json
+
+# Generated outputs
+market_news_crawler/outputs/
+market_news_crawler/Brief.pdf
+
+# Runtime/cache files under country data
+market_news_crawler/country_data/*/source_capability_cache.json
+market_news_crawler/country_data/*/site_credentials.json
+
+# Temporary / backup artifacts
+*.tmp
+*.bak
+*.corrupt_*

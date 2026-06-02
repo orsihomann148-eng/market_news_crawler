@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ app_title }}</title>
+  <style>
+    :root{--brand:#0f766e;--brand-dark:#115e59;--soft:#eef7f5;--bg:#f7f3ea;--line:#e5dccd;--text:#17231f;--muted:#6b7280;--warn:#b45309;--danger:#b91c1c}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .wrap{max-width:1180px;margin:0 auto;padding:26px}
+    .hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px;scroll-margin-top:88px}
+    h1{margin:0 0 6px;font-size:30px}
+    h2{margin:0 0 12px;font-size:20px}
+    h3{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted);line-height:1.6}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 10px 28px rgba(20,40,35,.06)}
+    .user-form-grid,.user-filter-grid,.manual-grid,.api-grid{display:grid;gap:14px}
+    .user-form-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+    .user-filter-grid{grid-template-columns:minmax(280px,1.4fr) minmax(190px,.8fr) minmax(240px,1fr)}
+    .manual-grid{grid-template-columns:repeat(2,minmax(260px,1fr))}
+    .manual-grid.three,.api-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .wide{grid-column:1/-1}
+    .platforms{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+    label{font-size:13px;font-weight:700}
+    input,select,textarea{width:100%;margin-top:7px;padding:11px 12px;border:1px solid #d9d1c3;border-radius:12px;font:inherit;background:#fff}
+    textarea{resize:vertical}
+    .check{display:flex;gap:8px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px}
+    .check input{width:auto;margin:0}
+    .inline-check{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:600;margin-top:10px}
+    .inline-check input{width:auto;margin:0}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+    .btn,.mini-btn{border:0;border-radius:12px;padding:11px 16px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;font-weight:700;text-decoration:none;cursor:pointer}
+    .mini-btn{background:#fff;color:var(--brand-dark);border:1px solid #cdd8d5;padding:8px 12px;font-size:12px}
+    .btn:disabled,.mini-btn:disabled{opacity:.72;cursor:progress}
+    .progress{height:12px;background:#e8ece9;border-radius:999px;overflow:hidden}
+    .progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),#14b8a6);transition:width .25s ease}
+    .feedback{min-height:20px;color:var(--brand-dark);font-size:13px}
+    .feedback.error{color:var(--danger)}
+    .hidden{display:none!important}
+    .user-nav{position:sticky;top:12px;z-index:30;display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px;padding:10px 0 14px;background:linear-gradient(180deg,rgba(247,243,234,.98) 0,rgba(247,243,234,.94) 75%,rgba(247,243,234,0) 100%);backdrop-filter:blur(8px)}
+    .user-nav .mini-btn{background:#fff}
+    .api-summary{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .api-summary strong{color:var(--brand-dark)}
+    .api-summary .muted{font-size:13px}
+    .api-config-details{margin-top:14px}
+    .job-status-line{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+    .job-time{font-size:13px;color:var(--brand-dark);font-weight:700}
+    .article-list{display:grid;gap:12px;margin-top:14px}
+    .article-selection-bar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+    .article{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+    .article-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .article-select{display:flex;gap:10px;align-items:flex-start;flex:1}
+    .article-select input{width:auto;margin:4px 0 0}
+    .article-title-block{flex:1}
+    .article-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}
+    .article-title-link,.article-note{font-size:14px;line-height:1.55}
+    .article-title-link{display:block;font-weight:700;color:var(--brand-dark);text-decoration:none}
+    .article-note{margin-top:5px;color:var(--muted);font-weight:400}
+    .chip{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--soft);color:var(--brand-dark)}
+    .chip.sentiment-positive{background:#ecfdf5;color:#047857}
+    .chip.sentiment-neutral{background:#f3f4f6;color:#4b5563}
+    .chip.sentiment-negative{background:#fef2f2;color:#b91c1c}
+    .summary-panel textarea{min-height:240px;line-height:1.65}
+    .manual-form{display:grid;gap:12px}
+    .manual-hint{font-size:13px;color:var(--muted);line-height:1.6}
+    .manual-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .manual-details{margin-top:18px;border-top:1px solid var(--line);padding-top:18px}
+    .manual-details summary{cursor:pointer;font-weight:800;color:var(--brand-dark);list-style:none}
+    .manual-details summary::-webkit-details-marker{display:none}
+    .manual-details[open] summary{margin-bottom:12px}
+    #user-api-section,#user-range-section,#user-results-section,#user-manual-section,#user-export-section{scroll-margin-top:88px}
+    @media(max-width:980px){.user-filter-grid{grid-template-columns:1fr 1fr}.user-filter-grid label:first-child{grid-column:1/-1}}
+    @media(max-width:760px){.wrap{padding:16px}.hero{display:grid}.user-form-grid,.user-filter-grid,.manual-grid,.manual-grid.three,.api-grid{grid-template-columns:1fr}.user-filter-grid label:first-child{grid-column:auto}.article-head,.article-select{display:block}.article-select input{margin-bottom:10px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero" id="user-overview-section">
+      <div>
+        <h1>{{ app_title }}</h1>
+        <div class="muted">普通用户模式：配置 AI、开始抓取、查看新闻，并基于已选新闻导出客户材料。</div>
+      </div>
+      <div class="top-actions">
+        <a class="mini-btn" href="{{ url_for('developer', country_code=selected_country_code) }}">开发者模式</a>
+        <a class="mini-btn" href="{{ url_for('logout') }}">退出登录</a>
+      </div>
+    </div>
+
+    <nav class="user-nav" aria-label="页面导航">
+      <button class="mini-btn js-user-nav" type="button" data-target="user-overview-section">总览</button>
+      <button class="mini-btn js-user-nav" type="button" data-target="user-api-section">AI 配置</button>
+      <button class="mini-btn js-user-nav" type="button" data-target="user-range-section">新闻抓取</button>
+      <button class="mini-btn js-user-nav" type="button" data-target="user-results-section">新闻查看</button>
+      <button class="mini-btn js-user-nav" type="button" data-target="user-manual-section">添加新闻</button>
+      <button class="mini-btn js-user-nav" type="button" data-target="user-export-section">导出材料</button>
+    </nav>
+
+    <section class="card" id="user-api-section">
+      <h2>0. AI 配置</h2>
+      <div class="api-summary" id="user-api-summary">
+        <div>
+          {% if ai_configured %}
+          <strong>AI API 已配置：{{ news_filter_state.survey_api_model }}</strong>
+          <div class="muted">如需更换 URL、Key 或模型，可点击“重新配置”。</div>
+          {% else %}
+          <strong>请先填写 AI API 配置</strong>
+          <div class="muted">第一次使用需要先填写并保存，保存成功后才能开始抓取。</div>
+          {% endif %}
+        </div>
+        <div class="actions" style="margin-top:0">
+          <button class="mini-btn{% if not ai_configured %} hidden{% endif %}" type="button" id="user-api-edit-toggle">重新配置</button>
+        </div>
+      </div>
+      <div class="api-config-details{% if ai_configured %} hidden{% endif %}" id="user-api-config-details">
+        <div class="api-grid">
+          <label>AI API URL
+            <input type="url" id="user-survey-api-url" name="survey_api_url" value="{{ news_filter_state.survey_api_url or '' }}" {% if ai_configured %}disabled{% endif %} placeholder="https://.../chat/completions">
+          </label>
+          <label>AI API Key
+            <input type="password" id="user-survey-api-key" name="survey_api_key" value="{% if not ai_configured %}{{ news_filter_state.survey_api_key or '' }}{% endif %}" {% if ai_configured %}disabled{% endif %} placeholder="请输入 API Key">
+            <span class="inline-check">
+              <input type="checkbox" id="user-survey-api-show-key">
+              <span>显示实际内容</span>
+            </span>
+          </label>
+          <label>AI 模型
+            <input type="text" id="user-survey-api-model" name="survey_api_model" value="{{ news_filter_state.survey_api_model or '' }}" {% if ai_configured %}disabled{% endif %} placeholder="例如 deepseek-v4-flash">
+          </label>
+        </div>
+        <div class="actions">
+          <button class="mini-btn" type="button" id="user-survey-api-test">测试 API</button>
+          <button class="btn" type="button" id="user-survey-api-save">保存配置</button>
+          <span class="feedback" id="user-survey-api-feedback"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="user-range-section">
+      <h2>1. 选择新闻范围</h2>
+      <form id="user-crawl-form">
+        <div class="user-form-grid">
+          <label>国家
+            <select name="country_code" id="user-country-select">
+              {% for code,label in country_options %}
+              <option value="{{ code }}" {% if code == selected_country_code %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>时间范围
+            <select name="days">
+              {% for day in [7, 14, 30, 60, 90] %}
+              <option value="{{ day }}" {% if news_form_state.days == day|string %}selected{% endif %}>最近 {{ day }} 天</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>输出语言
+            <select name="translate_to">
+              <option value="zh-CN" selected>中文</option>
+              <option value="en">英文</option>
+            </select>
+          </label>
+        </div>
+        <input type="hidden" name="date_mode" value="days">
+        <input type="hidden" name="output_dir" value="outputs">
+        <input type="hidden" name="recall_mode" value="balanced">
+        <input type="hidden" name="survey_filter_mode" value="ai">
+        <input type="hidden" name="related_news_search_enabled" value="1">
+        <input type="hidden" name="report_ranking_search_enabled" value="1">
+        <input type="hidden" name="promo_search_engine" value="both">
+        <input type="hidden" name="news_sides" value="media">
+        <input type="hidden" name="news_sides" value="buyer">
+        <input type="hidden" name="news_sides" value="seller">
+        <div class="hidden" id="user-api-hidden-state">
+          <input type="hidden" id="user-hidden-survey-api-url" name="survey_api_url" value="">
+          <input type="hidden" id="user-hidden-survey-api-key" name="survey_api_key" value="">
+          <input type="hidden" id="user-hidden-survey-api-model" name="survey_api_model" value="">
+        </div>
+        <div style="margin-top:14px">
+          <h3>选择品牌</h3>
+          <div class="platforms">
+            {% for platform in news_platform_ui.known_platforms %}
+            <label class="check">
+              <input type="checkbox" name="news_builtin_platforms" value="{{ platform }}" {% if platform in news_platform_ui.selected_known_platforms %}checked{% endif %}>
+              <span>{{ user_platform_display_labels.get(platform, platform) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" type="submit" id="user-run-button" {% if not ai_configured %}disabled{% endif %}>开始抓取</button>
+          <span class="feedback" id="user-run-feedback"></span>
+          <span class="job-time" id="user-job-time"></span>
+        </div>
+      </form>
+      <div id="user-job-panel" class="hidden" style="margin-top:16px">
+        <div class="progress"><span id="user-job-progress"></span></div>
+        <div class="job-status-line">
+          <div class="muted" id="user-job-label"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="user-results-section">
+      <h2>2. 查看结果</h2>
+      <form id="user-article-form" method="get" action="{{ url_for('index') }}">
+        <input type="hidden" name="country_code" value="{{ selected_country_code }}">
+        <div class="user-filter-grid">
+          <label>数据批次
+            <select name="article_source" id="user-article-source">
+              {% for source in article_browser_state.sources %}
+              <option value="{{ source.value }}" {% if source.value == article_browser_state.selected_source %}selected{% endif %}>{{ source.label }}</option>
+              {% endfor %}
+            </select>
+            <span class="muted" style="display:block;font-size:12px;margin-top:6px;font-weight:400">选择一次抓取结果，后续查看、添加新闻和导出材料都会基于该批次。</span>
+          </label>
+          <label>平台
+            <select name="article_platform">
+              <option value="">全部平台</option>
+              {% for platform in article_browser_state.available_platform_options %}
+              <option value="{{ platform.value }}" {% if platform.value == article_browser_state.selected_platform %}selected{% endif %}>{{ platform.label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>关键词
+            <input name="article_keyword" value="{{ article_browser_state.keyword }}" placeholder="标题、来源、指标">
+          </label>
+          <label>显示数量
+            <select name="article_limit">
+              <option value="20" {% if article_browser_state.limit == 20 %}selected{% endif %}>显示前 20 条</option>
+              <option value="50" {% if article_browser_state.limit == 50 %}selected{% endif %}>显示前 50 条</option>
+              <option value="100" {% if article_browser_state.limit == 100 %}selected{% endif %}>显示前 100 条</option>
+              <option value="all" {% if article_browser_state.limit == 'all' %}selected{% endif %}>全部展示</option>
+            </select>
+          </label>
+        </div>
+        <div class="actions">
+          <button class="mini-btn" type="submit">刷新新闻列表</button>
+          <span class="muted">当前筛选命中 {{ article_browser_state.matching_rows }} 条，展示 {{ article_browser_state.total_rows }} 条。</span>
+        </div>
+      </form>
+
+      {% if article_browser_state.rows %}
+      <div class="article-selection-bar">
+        <div class="actions" style="margin-top:0">
+          <button class="mini-btn" type="button" id="user-select-all-articles">全选</button>
+          <button class="mini-btn" type="button" id="user-clear-all-articles">取消全选</button>
+        </div>
+        <div class="muted" id="user-selected-count">已选择 0 条新闻</div>
+      </div>
+      {% endif %}
+
+      <div class="article-list" id="user-article-list">
+        {% for article in article_browser_state.rows %}
+        <article class="article" data-article-id="{{ article.article_id }}">
+          <div class="article-head">
+            <label class="article-select">
+              <input type="checkbox" class="js-user-article-select" value="{{ article.article_id }}" checked>
+              <div class="article-title-block">
+                <div class="article-meta-row">
+                  {% if article.platform_label %}<span class="chip">{{ article.platform_label_display or article.platform_label }}</span>{% endif %}
+                  {% if article.briefing_sentiment %}<span class="chip sentiment-{{ article.briefing_sentiment|lower }}">{{ article.briefing_sentiment }}</span>{% endif %}
+                  {% if article.industry_trend_flag %}<span class="chip">行业趋势</span>{% endif %}
+                  {% if article.manual_added %}<span class="chip">手动添加</span>{% endif %}
+                  {% if article.published_at_display %}<span class="chip">{{ article.published_at_display }}</span>{% endif %}
+                </div>
+                <a class="article-title-link" href="{{ article.article_url or '#' }}" target="_blank" rel="noopener">{{ article.title_original or article.title }}</a>
+                {% if article.title_display_zh and article.title_display_zh != article.title_original %}<div class="article-note">{{ article.title_display_zh }}</div>{% endif %}
+                {% if article.survey_dimensions %}<div class="article-note">指标：{{ article.survey_dimensions }}</div>{% endif %}
+                {% if article.survey_indicator_examples %}<div class="article-note">关联说明：{{ article.survey_indicator_examples }}</div>{% endif %}
+              </div>
+            </label>
+          </div>
+        </article>
+        {% else %}
+        <div class="muted">暂无可展示新闻。抓取完成后会自动出现最新批次。</div>
+        {% endfor %}
+      </div>
+
+      <details class="manual-details" id="user-manual-details">
+        <summary id="user-manual-section">添加新闻到当前批次</summary>
+        <div class="manual-hint">仅支持 SQLite 的 after 数据源。输入新闻 URL 后可让 AI 自动填表，检查无误后再保存。</div>
+        <form id="user-manual-article-form" class="manual-form">
+          <input type="hidden" name="manual_article_id" id="user-manual-article-id">
+          <div class="manual-grid">
+            <label>新闻 URL<input name="article_url" id="user-manual-article-url" placeholder="https://..."></label>
+            <label>平台/品牌<input name="platform_label" id="user-manual-article-platform" placeholder="Amazon / SHEIN / TEMU / TTS / eBay / IG" required></label>
+          </div>
+          <div class="manual-actions">
+            <button class="mini-btn" type="button" id="user-manual-ai-fill">AI 自动填写</button>
+            <span class="feedback" id="user-manual-feedback"></span>
+          </div>
+          <div class="manual-grid">
+            <label>原始标题<input name="title" id="user-manual-article-title" placeholder="原文标题"></label>
+            <label>中文标题<input name="title_translated" id="user-manual-article-title-zh" placeholder="可选"></label>
+          </div>
+          <div class="manual-grid three">
+            <label>发布时间<input name="published_at" id="user-manual-article-published" placeholder="YYYY-MM-DD" required></label>
+            <label>来源名称<input name="source_name" id="user-manual-article-source-name" placeholder="例如 Il Sole 24 ORE"></label>
+            <label>情绪
+              <select name="briefing_sentiment" id="user-manual-article-sentiment">
+                <option value="Neutral">Neutral</option>
+                <option value="Positive">Positive</option>
+                <option value="Negative">Negative</option>
+              </select>
+            </label>
+          </div>
+          <label>摘要<textarea name="summary" id="user-manual-article-summary" rows="2" placeholder="可选"></textarea></label>
+          <div class="manual-grid">
+            <label>指标映射<input name="survey_dimensions" id="user-manual-article-dimensions" placeholder="例如 Price | Features"></label>
+            <label>题号<input name="survey_question_ids" id="user-manual-article-question-ids" placeholder="例如 B3_1 | B5_18"></label>
+          </div>
+          <label>关联说明<textarea name="survey_indicator_examples" id="user-manual-article-examples" rows="2" placeholder="可选"></textarea></label>
+          <div class="manual-grid three">
+            <label class="check"><input type="checkbox" name="industry_trend_flag" id="user-manual-article-industry-flag"> 行业趋势</label>
+            <label>趋势类别<input name="industry_trend_category" id="user-manual-article-industry-category" placeholder="可选"></label>
+            <label>趋势影响
+              <select name="industry_trend_impact" id="user-manual-article-industry-impact">
+                <option value="">未填写</option>
+                <option value="Positive">Positive</option>
+                <option value="Negative">Negative</option>
+                <option value="Mixed">Mixed</option>
+                <option value="Neutral">Neutral</option>
+              </select>
+            </label>
+          </div>
+          <label>行业趋势说明<textarea name="industry_trend_reason" id="user-manual-article-industry-reason" rows="2" placeholder="可选"></textarea></label>
+          <div class="actions">
+            <button class="btn" type="submit" id="user-manual-article-save">保存新闻</button>
+            <button class="mini-btn" type="button" id="user-manual-article-reset">清空</button>
+          </div>
+        </form>
+      </details>
+    </section>
+
+    <section class="card" id="user-export-section">
+      <h2>3. 导出客户材料</h2>
+      <div class="muted">将基于当前已勾选的新闻生成资讯表或新闻总结。</div>
+      <div class="actions">
+        <button class="btn" type="button" id="user-briefing-table">生成资讯表</button>
+        <button class="btn" type="button" id="user-news-summary">生成新闻总结</button>
+        <span class="feedback" id="user-export-feedback"></span>
+      </div>
+      <div class="summary-panel hidden" id="user-summary-panel" style="margin-top:14px">
+        <div class="actions">
+          <button class="mini-btn" type="button" id="user-summary-copy">复制全文</button>
+          <button class="mini-btn" type="button" id="user-summary-download">下载 TXT</button>
+          <span class="muted" id="user-summary-meta"></span>
+        </div>
+        <textarea id="user-summary-text" readonly></textarea>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const crawlForm = document.getElementById('user-crawl-form');
+    const articleForm = document.getElementById('user-article-form');
+    const runButton = document.getElementById('user-run-button');
+    const runFeedback = document.getElementById('user-run-feedback');
+    const jobPanel = document.getElementById('user-job-panel');
+    const jobProgress = document.getElementById('user-job-progress');
+    const jobLabel = document.getElementById('user-job-label');
+    const jobTime = document.getElementById('user-job-time');
+    const exportFeedback = document.getElementById('user-export-feedback');
+    const summaryPanel = document.getElementById('user-summary-panel');
+    const summaryText = document.getElementById('user-summary-text');
+    const summaryMeta = document.getElementById('user-summary-meta');
+    const userManualForm = document.getElementById('user-manual-article-form');
+    const userManualFeedback = document.getElementById('user-manual-feedback');
+    const userManualAiFill = document.getElementById('user-manual-ai-fill');
+    const userManualReset = document.getElementById('user-manual-article-reset');
+    const userManualDetails = document.getElementById('user-manual-details');
+    const apiSummary = document.getElementById('user-api-summary');
+    const apiDetails = document.getElementById('user-api-config-details');
+    const apiEditToggle = document.getElementById('user-api-edit-toggle');
+    const apiUrlInput = document.getElementById('user-survey-api-url');
+    const apiKeyInput = document.getElementById('user-survey-api-key');
+    const apiModelInput = document.getElementById('user-survey-api-model');
+    const apiShowKey = document.getElementById('user-survey-api-show-key');
+    const apiTestButton = document.getElementById('user-survey-api-test');
+    const apiSaveButton = document.getElementById('user-survey-api-save');
+    const apiFeedback = document.getElementById('user-survey-api-feedback');
+    const hiddenApiUrl = document.getElementById('user-hidden-survey-api-url');
+    const hiddenApiKey = document.getElementById('user-hidden-survey-api-key');
+    const hiddenApiModel = document.getElementById('user-hidden-survey-api-model');
+    const selectAllArticlesButton = document.getElementById('user-select-all-articles');
+    const clearAllArticlesButton = document.getElementById('user-clear-all-articles');
+    const selectedCountNode = document.getElementById('user-selected-count');
+    const initialApiConfigured = {{ 'true' if ai_configured else 'false' }};
+    let latestSummaryFilename = '';
+    let userApiConfigured = initialApiConfigured;
+
+    function setText(node, value) {
+      if (node) node.textContent = value || '';
+    }
+
+    function formatSeconds(seconds) {
+      const totalSeconds = Math.max(0, Number.parseInt(seconds || '0', 10));
+      const sec = String(totalSeconds % 60).padStart(2, '0');
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const min = String(totalMinutes % 60).padStart(2, '0');
+      const hour = Math.floor(totalMinutes / 60);
+      return hour > 0 ? `${String(hour).padStart(2, '0')}:${min}:${sec}` : `${min}:${sec}`;
+    }
+
+    function setJobTime(payload, prefix = '') {
+      const elapsed = formatSeconds(payload && payload.elapsed_seconds);
+      const remainingValue = payload ? payload.remaining_seconds : null;
+      const remaining = remainingValue === null || remainingValue === undefined ? '计算中' : formatSeconds(remainingValue);
+      const text = `${prefix ? `${prefix} ` : ''}已运行 ${elapsed} · 预计剩余 ${remaining}`;
+      setText(jobTime, text);
+    }
+
+    function cleanUserProgressLabel(label) {
+      return String(label || '')
+        .replace(/\s*·\s*elapsed\s+\d{1,2}:\d{2}(?::\d{2})?/gi, '')
+        .replace(/\s*·\s*remaining\s+\d{1,2}:\d{2}(?::\d{2})?/gi, '')
+        .replace(/\s*·\s*elapsed\s+[^·]+/gi, '')
+        .replace(/\s*·\s*remaining\s+[^·]+/gi, '')
+        .trim();
+    }
+
+    async function parseJsonResponse(response) {
+      const text = await response.text();
+      try {
+        return text ? JSON.parse(text) : {};
+      } catch (error) {
+        throw new Error(text ? text.slice(0, 500) : `请求失败：${response.status}`);
+      }
+    }
+
+    function filenameFromDisposition(disposition, fallback) {
+      const header = String(disposition || '');
+      const utfMatch = header.match(/filename\*=UTF-8''([^;]+)/i);
+      if (utfMatch) {
+        try {
+          return decodeURIComponent(utfMatch[1]);
+        } catch (error) {
+          return utfMatch[1];
+        }
+      }
+      const match = header.match(/filename="?([^";]+)"?/i);
+      return match ? match[1] : fallback;
+    }
+
+    async function readDownloadError(response) {
+      const text = await response.text();
+      try {
+        const payload = JSON.parse(text);
+        return payload.error || payload.message || text.slice(0, 500);
+      } catch (error) {
+        return text ? text.slice(0, 500) : `请求失败：${response.status}`;
+      }
+    }
+
+    function currentArticleSource() {
+      if (!(articleForm instanceof HTMLFormElement)) return '';
+      return String(new FormData(articleForm).get('article_source') || '');
+    }
+
+    function getArticleSelectionCheckboxes() {
+      return Array.from(document.querySelectorAll('.js-user-article-select'));
+    }
+
+    function getSelectedArticleIds() {
+      return getArticleSelectionCheckboxes()
+        .filter((checkbox) => checkbox instanceof HTMLInputElement && checkbox.checked)
+        .map((checkbox) => checkbox.value.trim())
+        .filter(Boolean);
+    }
+
+    function updateSelectedArticleState() {
+      const checkboxes = getArticleSelectionCheckboxes();
+      const selectedCount = getSelectedArticleIds().length;
+      if (selectedCountNode) {
+        setText(selectedCountNode, `已选择 ${selectedCount} 条新闻`);
+      }
+      if (selectAllArticlesButton instanceof HTMLButtonElement) {
+        selectAllArticlesButton.disabled = checkboxes.length === 0 || selectedCount === checkboxes.length;
+      }
+      if (clearAllArticlesButton instanceof HTMLButtonElement) {
+        clearAllArticlesButton.disabled = checkboxes.length === 0 || selectedCount === 0;
+      }
+    }
+
+    function buildSelectedArticleFormData() {
+      if (!(articleForm instanceof HTMLFormElement)) return null;
+      const selectedArticleIds = getSelectedArticleIds();
+      if (!selectedArticleIds.length) {
+        setText(exportFeedback, '请至少选择 1 条新闻。');
+        return null;
+      }
+      const formData = new FormData(articleForm);
+      formData.append('article_selection_mode', 'selected');
+      selectedArticleIds.forEach((articleId) => formData.append('selected_article_ids', articleId));
+      return { formData, selectedCount: selectedArticleIds.length };
+    }
+
+    function setUserManualField(id, value) {
+      const field = document.getElementById(id);
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+        field.value = value || '';
+      }
+    }
+
+    function fillUserManualArticleForm(dataset) {
+      setUserManualField('user-manual-article-id', dataset.manualArticleId || '');
+      setUserManualField('user-manual-article-platform', dataset.platformLabel || '');
+      setUserManualField('user-manual-article-title', dataset.title || '');
+      setUserManualField('user-manual-article-title-zh', dataset.titleTranslated || '');
+      setUserManualField('user-manual-article-url', dataset.articleUrl || '');
+      setUserManualField('user-manual-article-source-name', dataset.sourceName || '');
+      setUserManualField('user-manual-article-published', dataset.publishedAt || '');
+      setUserManualField('user-manual-article-summary', dataset.summary || '');
+      setUserManualField('user-manual-article-dimensions', dataset.surveyDimensions || '');
+      setUserManualField('user-manual-article-question-ids', dataset.surveyQuestionIds || '');
+      setUserManualField('user-manual-article-examples', dataset.surveyIndicatorExamples || '');
+      setUserManualField('user-manual-article-sentiment', dataset.briefingSentiment || 'Neutral');
+      setUserManualField('user-manual-article-industry-category', dataset.industryTrendCategory || '');
+      setUserManualField('user-manual-article-industry-impact', dataset.industryTrendImpact || '');
+      setUserManualField('user-manual-article-industry-reason', dataset.industryTrendReason || '');
+      const trendFlag = document.getElementById('user-manual-article-industry-flag');
+      if (trendFlag instanceof HTMLInputElement) {
+        trendFlag.checked = dataset.industryTrendFlag === '1';
+      }
+    }
+
+    function resetUserManualArticleForm() {
+      if (userManualForm instanceof HTMLFormElement) {
+        userManualForm.reset();
+        setUserManualField('user-manual-article-id', '');
+      }
+    }
+
+    function ensureDbAfterSourceForManual() {
+      const selectedSource = currentArticleSource();
+      if (!selectedSource.startsWith('db:') || !selectedSource.endsWith(':after')) {
+        setText(userManualFeedback, '请先选择 SQLite 的 after 数据批次后再添加新闻。');
+        return '';
+      }
+      return selectedSource;
+    }
+
+    function syncApiHiddenInputs() {
+      if (!(apiUrlInput instanceof HTMLInputElement) || !(apiKeyInput instanceof HTMLInputElement) || !(apiModelInput instanceof HTMLInputElement)) return;
+      if (!hiddenApiUrl || !hiddenApiKey || !hiddenApiModel) return;
+      if (apiUrlInput.disabled || apiKeyInput.disabled || apiModelInput.disabled) {
+        hiddenApiUrl.value = '';
+        hiddenApiKey.value = '';
+        hiddenApiModel.value = '';
+        return;
+      }
+      const apiUrl = apiUrlInput.value.trim();
+      const apiKey = apiKeyInput.value.trim();
+      const apiModel = apiModelInput.value.trim();
+      if (!apiUrl || !apiKey || !apiModel) {
+        hiddenApiUrl.value = '';
+        hiddenApiKey.value = '';
+        hiddenApiModel.value = '';
+        return;
+      }
+      hiddenApiUrl.value = apiUrl;
+      hiddenApiKey.value = apiKey;
+      hiddenApiModel.value = apiModel;
+    }
+
+    function setApiInputsEnabled(enabled) {
+      [apiUrlInput, apiKeyInput, apiModelInput].forEach((input) => {
+        if (input instanceof HTMLInputElement) input.disabled = !enabled;
+      });
+      syncApiHiddenInputs();
+    }
+
+    function showApiConfigEditor() {
+      if (apiDetails) apiDetails.classList.remove('hidden');
+      if (apiEditToggle) apiEditToggle.classList.add('hidden');
+      setApiInputsEnabled(true);
+      if (apiKeyInput instanceof HTMLInputElement && userApiConfigured) {
+        apiKeyInput.value = '';
+      }
+      setText(apiFeedback, '');
+    }
+
+    function setApiConfiguredState(apiUrl, apiModel) {
+      userApiConfigured = Boolean(apiUrl && apiModel);
+      if (runButton) runButton.disabled = !userApiConfigured;
+      if (apiSummary) {
+        apiSummary.innerHTML = userApiConfigured
+          ? `<div><strong>AI API 已配置：${apiModel}</strong><div class="muted">如需更换 URL、Key 或模型，可点击“重新配置”。</div></div><div class="actions" style="margin-top:0"><button class="mini-btn" type="button" id="user-api-edit-toggle">重新配置</button></div>`
+          : `<div><strong>请先填写 AI API 配置</strong><div class="muted">第一次使用需要先填写并保存，保存成功后才能开始抓取。</div></div><div class="actions" style="margin-top:0"></div>`;
+      }
+      const newToggle = document.getElementById('user-api-edit-toggle');
+      if (newToggle) {
+        newToggle.addEventListener('click', showApiConfigEditor);
+      }
+    }
+
+    async function pollJob(jobId) {
+      if (!jobId) return;
+      const response = await fetch(`/api/jobs/${jobId}`);
+      const payload = await parseJsonResponse(response);
+      if (!response.ok) throw new Error(payload.error || '获取任务进度失败');
+      const percent = Math.max(0, Math.min(100, Number.parseInt(payload.progress_percent || '0', 10)));
+      if (jobProgress) jobProgress.style.width = `${percent}%`;
+      setJobTime(payload);
+      const progressLabel = cleanUserProgressLabel(payload.progress_label || '任务运行中');
+      setText(jobLabel, `${progressLabel} · ${percent}%`);
+      if (payload.status === 'completed') {
+        if (Number(payload.exit_code || 0) === 0) {
+          setJobTime(payload, '完成');
+          setText(runFeedback, '抓取完成，正在刷新最新结果...');
+          window.setTimeout(() => {
+            window.location.href = `/?country_code=${encodeURIComponent(payload.country_code || '')}`;
+          }, 900);
+        } else {
+          setJobTime(payload, '失败');
+          setText(runFeedback, '抓取结束但出现错误，请在开发者模式查看日志。');
+        }
+        if (runButton) runButton.disabled = false;
+        return;
+      }
+      window.setTimeout(() => pollJob(jobId).catch((error) => setText(runFeedback, error.message)), 1500);
+    }
+
+    if (apiShowKey && apiKeyInput instanceof HTMLInputElement) {
+      apiShowKey.addEventListener('change', () => {
+        apiKeyInput.type = apiShowKey.checked ? 'text' : 'password';
+      });
+    }
+    if (apiUrlInput instanceof HTMLInputElement) apiUrlInput.addEventListener('input', syncApiHiddenInputs);
+    if (apiKeyInput instanceof HTMLInputElement) apiKeyInput.addEventListener('input', syncApiHiddenInputs);
+    if (apiModelInput instanceof HTMLInputElement) apiModelInput.addEventListener('input', syncApiHiddenInputs);
+    if (apiEditToggle) apiEditToggle.addEventListener('click', showApiConfigEditor);
+
+    if (apiTestButton) {
+      apiTestButton.addEventListener('click', async () => {
+        syncApiHiddenInputs();
+        const apiUrl = apiUrlInput instanceof HTMLInputElement ? apiUrlInput.value.trim() : '';
+        const apiKey = apiKeyInput instanceof HTMLInputElement ? apiKeyInput.value.trim() : '';
+        const apiModel = apiModelInput instanceof HTMLInputElement ? apiModelInput.value.trim() : '';
+        if (!apiUrl || !apiKey || !apiModel) {
+          setText(apiFeedback, '请先完整填写 AI API URL、Key 和模型。');
+          return;
+        }
+        apiTestButton.disabled = true;
+        setText(apiFeedback, '正在测试 API...');
+        try {
+          const formData = new FormData();
+          formData.append('survey_api_url', apiUrl);
+          formData.append('survey_api_key', apiKey);
+          formData.append('survey_api_model', apiModel);
+          const response = await fetch('/api/test/survey-api', { method: 'POST', body: formData });
+          const payload = await parseJsonResponse(response);
+          if (!response.ok || !payload.ok) throw new Error(payload.error || 'API 测试失败');
+          setText(apiFeedback, `API 测试成功：${payload.api_model}`);
+        } catch (error) {
+          setText(apiFeedback, error instanceof Error ? error.message : 'API 测试失败');
+        } finally {
+          apiTestButton.disabled = false;
+        }
+      });
+    }
+
+    if (apiSaveButton && crawlForm instanceof HTMLFormElement) {
+      apiSaveButton.addEventListener('click', async () => {
+        syncApiHiddenInputs();
+        const apiUrl = apiUrlInput instanceof HTMLInputElement ? apiUrlInput.value.trim() : '';
+        const apiKey = apiKeyInput instanceof HTMLInputElement ? apiKeyInput.value.trim() : '';
+        const apiModel = apiModelInput instanceof HTMLInputElement ? apiModelInput.value.trim() : '';
+        if (!apiUrl || !apiKey || !apiModel) {
+          setText(apiFeedback, '请先完整填写 AI API URL、Key 和模型。');
+          return;
+        }
+        apiSaveButton.disabled = true;
+        setText(apiFeedback, '正在保存 AI 配置...');
+        try {
+          const response = await fetch('/api/news-form-state', { method: 'POST', body: new FormData(crawlForm) });
+          const payload = await parseJsonResponse(response);
+          if (!response.ok || !payload.ok) throw new Error(payload.error || '保存配置失败');
+          setApiInputsEnabled(false);
+          if (apiDetails) apiDetails.classList.add('hidden');
+          if (apiKeyInput instanceof HTMLInputElement) apiKeyInput.value = '';
+          syncApiHiddenInputs();
+          setApiConfiguredState(apiUrl, apiModel);
+          setText(apiFeedback, 'AI API 已保存。');
+        } catch (error) {
+          setText(apiFeedback, error instanceof Error ? error.message : '保存配置失败');
+        } finally {
+          apiSaveButton.disabled = false;
+        }
+      });
+    }
+
+    if (document.getElementById('user-country-select')) {
+      document.getElementById('user-country-select').addEventListener('change', (event) => {
+        window.location.href = `/?country_code=${encodeURIComponent(event.target.value)}`;
+      });
+    }
+
+    document.querySelectorAll('.js-user-nav').forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target || '';
+        const target = document.getElementById(targetId);
+        if (targetId === 'user-manual-section' && userManualDetails instanceof HTMLDetailsElement) {
+          userManualDetails.open = true;
+        }
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    getArticleSelectionCheckboxes().forEach((checkbox) => {
+      checkbox.addEventListener('change', updateSelectedArticleState);
+    });
+    if (selectAllArticlesButton) {
+      selectAllArticlesButton.addEventListener('click', () => {
+        getArticleSelectionCheckboxes().forEach((checkbox) => {
+          if (checkbox instanceof HTMLInputElement) checkbox.checked = true;
+        });
+        updateSelectedArticleState();
+      });
+    }
+    if (clearAllArticlesButton) {
+      clearAllArticlesButton.addEventListener('click', () => {
+        getArticleSelectionCheckboxes().forEach((checkbox) => {
+          if (checkbox instanceof HTMLInputElement) checkbox.checked = false;
+        });
+        updateSelectedArticleState();
+      });
+    }
+
+    if (crawlForm) {
+      crawlForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        syncApiHiddenInputs();
+        if (runButton) runButton.disabled = true;
+        if (jobPanel) jobPanel.classList.remove('hidden');
+        setText(jobTime, '已运行 00:00 · 预计剩余 计算中');
+        setText(runFeedback, '正在创建抓取任务...');
+        try {
+          const response = await fetch('/api/run/news-crawler', { method: 'POST', body: new FormData(crawlForm) });
+          const payload = await parseJsonResponse(response);
+          if (!response.ok || payload.ok === false) throw new Error(payload.error || '启动失败');
+          setText(runFeedback, '抓取任务已启动。');
+          await pollJob(payload.job_id);
+        } catch (error) {
+          setText(runFeedback, error instanceof Error ? error.message : '启动失败');
+          if (runButton) runButton.disabled = false;
+        }
+      });
+    }
+
+    if (userManualReset) {
+      userManualReset.addEventListener('click', () => {
+        resetUserManualArticleForm();
+        setText(userManualFeedback, '已清空。');
+      });
+    }
+
+    if (userManualAiFill && userManualForm instanceof HTMLFormElement) {
+      userManualAiFill.addEventListener('click', async () => {
+        const selectedSource = ensureDbAfterSourceForManual();
+        if (!selectedSource) return;
+        const formData = new FormData(userManualForm);
+        const articleUrl = String(formData.get('article_url') || '').trim();
+        if (!articleUrl) {
+          setText(userManualFeedback, '请先输入新闻 URL。');
+          return;
+        }
+        formData.append('country_code', '{{ selected_country_code }}');
+        formData.append('article_source', selectedSource);
+        formData.append('platform_hint', String(formData.get('platform_label') || ''));
+        userManualAiFill.disabled = true;
+        setText(userManualFeedback, 'AI 正在读取 URL 并填写表单...');
+        try {
+          const response = await fetch('/api/articles/manual/suggest', { method: 'POST', body: formData });
+          const payload = await parseJsonResponse(response);
+          if (!response.ok || !payload.ok) throw new Error(payload.error || 'AI 自动填写失败');
+          fillUserManualArticleForm(payload.dataset || {});
+          setText(userManualFeedback, 'AI 已填写表单，请检查后保存。');
+        } catch (error) {
+          setText(userManualFeedback, error instanceof Error ? error.message : 'AI 自动填写失败');
+        } finally {
+          userManualAiFill.disabled = false;
+        }
+      });
+    }
+
+    if (userManualForm instanceof HTMLFormElement && articleForm instanceof HTMLFormElement) {
+      userManualForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const selectedSource = ensureDbAfterSourceForManual();
+        if (!selectedSource) return;
+        const saveButton = document.getElementById('user-manual-article-save');
+        if (saveButton instanceof HTMLButtonElement) saveButton.disabled = true;
+        try {
+          const formData = new FormData(userManualForm);
+          formData.append('country_code', '{{ selected_country_code }}');
+          formData.append('article_source', selectedSource);
+          const response = await fetch('/api/articles/manual', { method: 'POST', body: formData });
+          const payload = await parseJsonResponse(response);
+          if (!response.ok || !payload.ok) throw new Error(payload.error || '保存失败');
+          setText(userManualFeedback, payload.updated_existing ? '新闻已更新，正在刷新列表...' : '新闻已添加，正在刷新列表...');
+          resetUserManualArticleForm();
+          window.setTimeout(() => articleForm.requestSubmit(), 150);
+        } catch (error) {
+          setText(userManualFeedback, error instanceof Error ? error.message : '保存失败');
+        } finally {
+          if (saveButton instanceof HTMLButtonElement) saveButton.disabled = false;
+        }
+      });
+    }
+
+    if (document.getElementById('user-briefing-table')) {
+      document.getElementById('user-briefing-table').addEventListener('click', async () => {
+        const selection = buildSelectedArticleFormData();
+        if (!selection) return;
+        setText(exportFeedback, `正在基于 ${selection.selectedCount} 条已选新闻生成资讯表...`);
+        try {
+          const response = await fetch('/api/articles/briefing-table', { method: 'POST', body: selection.formData });
+          if (!response.ok) throw new Error(await readDownloadError(response));
+          const blob = await response.blob();
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = filenameFromDisposition(response.headers.get('Content-Disposition'), 'briefing_table.xlsx');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(link.href), 500);
+          const failedRows = Number.parseInt(response.headers.get('X-Briefing-AI-Failed-Row-Count') || '0', 10);
+          setText(exportFeedback, failedRows > 0 ? `资讯表已生成，但有 ${failedRows} 条新闻需人工复核。` : '资讯表已生成。');
+        } catch (error) {
+          setText(exportFeedback, error instanceof Error ? error.message : '生成资讯表失败');
+        }
+      });
+    }
+
+    if (document.getElementById('user-news-summary')) {
+      document.getElementById('user-news-summary').addEventListener('click', async () => {
+        const selection = buildSelectedArticleFormData();
+        if (!selection) return;
+        setText(exportFeedback, `正在基于 ${selection.selectedCount} 条已选新闻生成新闻总结...`);
+        try {
+          const response = await fetch('/api/articles/news-summary', { method: 'POST', body: selection.formData });
+          const payload = await parseJsonResponse(response);
+          if (!response.ok || !payload.ok) throw new Error(payload.error || '生成新闻总结失败');
+          latestSummaryFilename = payload.filename || 'news_summary.txt';
+          if (summaryText) summaryText.value = payload.text || '';
+          if (summaryPanel) summaryPanel.classList.remove('hidden');
+          const failedRows = Number.parseInt((payload.stats || {}).failed_row_count || '0', 10);
+          setText(summaryMeta, failedRows > 0 ? `${failedRows} 条兜底摘要需要复核。` : `已生成 ${payload.matching_rows || selection.selectedCount} 条摘要。`);
+          setText(exportFeedback, '新闻总结已生成。');
+        } catch (error) {
+          setText(exportFeedback, error instanceof Error ? error.message : '生成新闻总结失败');
+        }
+      });
+    }
+
+    if (document.getElementById('user-summary-copy')) {
+      document.getElementById('user-summary-copy').addEventListener('click', async () => {
+        if (!summaryText || !summaryText.value.trim()) {
+          setText(exportFeedback, '没有可复制的内容。');
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(summaryText.value);
+          setText(exportFeedback, '新闻总结已复制。');
+        } catch (error) {
+          summaryText.focus();
+          summaryText.select();
+          document.execCommand('copy');
+          setText(exportFeedback, '新闻总结已复制。');
+        }
+      });
+    }
+
+    if (document.getElementById('user-summary-download')) {
+      document.getElementById('user-summary-download').addEventListener('click', () => {
+        if (!summaryText || !summaryText.value.trim()) {
+          setText(exportFeedback, '没有可下载的内容。');
+          return;
+        }
+        const blob = new Blob([summaryText.value], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = latestSummaryFilename || 'news_summary.txt';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(link.href), 500);
+      });
+    }
+
+    syncApiHiddenInputs();
+    updateSelectedArticleState();
+  </script>
+</body>
+</html>

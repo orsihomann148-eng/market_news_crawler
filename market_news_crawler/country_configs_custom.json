@@ -1,0 +1,875 @@
+{
+  "version": 1,
+  "countries": {
+    "germany": {
+      "code": "germany",
+      "label": "德国",
+      "consumer_label": "德国消费者",
+      "market_label": "德国市场",
+      "timezone": "Europe/Berlin",
+      "google_news_hl": "de",
+      "google_news_gl": "DE",
+      "google_news_ceid": "DE:de",
+      "bing_news_market": "de-DE",
+      "market_terms": [
+        "Germany",
+        "German",
+        "Deutschland",
+        "德国",
+        "德国市场"
+      ],
+      "market_search_block": "(Germany OR German OR Deutschland OR 德国 OR 德国市场)",
+      "xlsx_path": "country_data/germany/source_survey.xlsx",
+      "include_xlsx_sources": false,
+      "extra_sources_path": "country_data/germany/extra_sources.json",
+      "adapter_configs_path": "country_data/germany/site_adapter_configs.json",
+      "site_credentials_path": "country_data/germany/site_credentials.json",
+      "source_capability_cache_path": "country_data/germany/source_capability_cache.json",
+      "output_slug": "germany",
+      "legacy_output_prefixes": [],
+      "app_title": "新闻资讯抓取工具",
+      "promo_search_query_blocks": [
+        [
+          "promo_core",
+          "(Aktion OR Aktionen OR Angebot OR Angebote OR Rabatt OR Rabatte OR Gutschein OR Gutscheincode OR Coupon OR Sale OR Deal OR Sonderangebot OR Cashback OR Promotion)"
+        ],
+        [
+          "points_rewards",
+          "(Punkte OR Treuepunkte OR Bonuspunkte OR Loyalität OR Kundenkarte OR Prämie OR Prämien OR Belohnung OR Cashback OR Payback)"
+        ],
+        [
+          "price_event",
+          "(Blitzangebot OR Blitzangebote OR \"zeitlich begrenzt\" OR \"nur kurze Zeit\" OR Preisnachlass OR Preissenkung OR Sonderpreis OR Bundle OR Gutschein)"
+        ],
+        [
+          "shopping_festivals",
+          "(\"Black Friday\" OR \"Cyber Monday\" OR \"Prime Day\" OR \"Shopping Festival\" OR Winterschlussverkauf OR Sommerschlussverkauf OR Saisonverkauf)"
+        ],
+        [
+          "seasonal_holidays",
+          "(Weihnachten OR Ostern OR Valentinstag OR Muttertag OR Vatertag OR Schulanfang OR Geschenk OR Geschenke OR saisonal)"
+        ]
+      ],
+      "related_news_query_blocks": [
+        [
+          "promo_core",
+          "(Aktion OR Aktionen OR Angebot OR Angebote OR Rabatt OR Rabatte OR Gutschein OR Gutscheincode OR Coupon OR Sale OR Deal OR Sonderangebot OR Cashback OR Promotion)"
+        ],
+        [
+          "points_rewards",
+          "(Punkte OR Treuepunkte OR Bonuspunkte OR Loyalität OR Kundenkarte OR Prämie OR Prämien OR Belohnung OR Cashback OR Payback)"
+        ],
+        [
+          "price_event",
+          "(Blitzangebot OR Blitzangebote OR \"zeitlich begrenzt\" OR \"nur kurze Zeit\" OR Preisnachlass OR Preissenkung OR Sonderpreis OR Bundle OR Gutschein)"
+        ],
+        [
+          "shopping_festivals",
+          "(\"Black Friday\" OR \"Cyber Monday\" OR \"Prime Day\" OR \"Shopping Festival\" OR Winterschlussverkauf OR Sommerschlussverkauf OR Saisonverkauf)"
+        ],
+        [
+          "seasonal_holidays",
+          "(Weihnachten OR Ostern OR Valentinstag OR Muttertag OR Vatertag OR Schulanfang OR Geschenk OR Geschenke OR saisonal)"
+        ]
+      ],
+      "report_query_blocks": [
+        [
+          "ranking_report",
+          "(Ranking OR Rangliste OR Vergleich OR Bericht OR Studie OR Umfrage OR Daten OR Statistik OR Marktanteil OR Index OR Barometer OR Benchmark OR Verbraucherumfrage)"
+        ]
+      ],
+      "dimension_search_term_overrides": {},
+      "platform_display_overrides": {},
+      "platform_search_term_overrides": {
+        "TikTok Shop": [
+          "TikTok Shop",
+          "TikTok",
+          "TikTok Shop Deutschland",
+          "TikTok Shop Germany",
+          "TikTok Shop DE",
+          "TikTok Deutschland",
+          "TikTok Germany",
+          "TikTok DE",
+          "TTS",
+          "TTS DE",
+          "TT Shop",
+          "TikTok Shop German",
+          "TikTok German",
+          "TTS Germany",
+          "TTS German",
+          "TTS Deutschland",
+          "TT Shop DE",
+          "TT Shop Germany",
+          "TT Shop German",
+          "TT Shop Deutschland"
+        ],
+        "Amazon": [
+          "Amazon",
+          "Amazon.de",
+          "Amazon Deutschland",
+          "Amazon Germany",
+          "Amazon DE",
+          "Amazon German"
+        ],
+        "SHEIN": [
+          "SHEIN",
+          "SHEIN Deutschland",
+          "SHEIN Germany",
+          "SHEIN DE",
+          "Shein",
+          "Shein DE",
+          "Shein Deutschland",
+          "Shein Germany",
+          "SHEIN German",
+          "Shein German"
+        ],
+        "Zalando": [
+          "Zalando",
+          "Zalando.de",
+          "Zalando Deutschland",
+          "Zalando Germany",
+          "Zalando DE",
+          "Zalando German"
+        ],
+        "Temu": [
+          "Temu",
+          "Temu Deutschland",
+          "Temu Germany",
+          "Temu DE",
+          "TEMU",
+          "TEMU DE",
+          "TEMU Deutschland",
+          "TEMU Germany",
+          "Temu German",
+          "TEMU German"
+        ],
+        "INS-DTC": [
+          "INS-DTC",
+          "Instagram Shopping",
+          "Instagram Shop",
+          "Instagram",
+          "Instagram DTC",
+          "IG",
+          "INS",
+          "Instagram Shopping Deutschland",
+          "Instagram Shopping Germany",
+          "Instagram Shopping DE",
+          "Instagram Deutschland",
+          "Instagram Germany",
+          "Instagram DE",
+          "Instagram Shop DE",
+          "IG DE",
+          "Instagram German",
+          "Instagram Shopping German",
+          "Instagram Shop Germany",
+          "Instagram Shop German",
+          "Instagram Shop Deutschland",
+          "Instagram DTC DE",
+          "Instagram DTC Germany",
+          "Instagram DTC German",
+          "Instagram DTC Deutschland",
+          "IG Germany",
+          "IG German",
+          "IG Deutschland",
+          "INS DE",
+          "INS Germany",
+          "INS German",
+          "INS Deutschland",
+          "INS-DTC DE",
+          "INS-DTC Germany",
+          "INS-DTC German",
+          "INS-DTC Deutschland"
+        ]
+      },
+      "default_platform_search_term_overrides": {
+        "TikTok Shop": [
+          "TikTok Shop",
+          "TikTok",
+          "TikTok Shop Deutschland",
+          "TikTok Shop Germany",
+          "TikTok Shop DE",
+          "TikTok Deutschland",
+          "TikTok Germany"
+        ],
+        "Amazon": [
+          "Amazon",
+          "Amazon.de",
+          "Amazon Deutschland",
+          "Amazon Germany",
+          "Amazon DE"
+        ],
+        "SHEIN": [
+          "SHEIN",
+          "SHEIN Deutschland",
+          "SHEIN Germany",
+          "SHEIN DE"
+        ],
+        "Zalando": [
+          "Zalando",
+          "Zalando.de",
+          "Zalando Deutschland",
+          "Zalando Germany",
+          "Zalando DE"
+        ],
+        "Temu": [
+          "Temu",
+          "Temu Deutschland",
+          "Temu Germany",
+          "Temu DE"
+        ],
+        "INS-DTC": [
+          "INS-DTC",
+          "Instagram Shopping",
+          "Instagram Shop",
+          "Instagram",
+          "Instagram DTC",
+          "IG",
+          "INS",
+          "Instagram Shopping Deutschland",
+          "Instagram Shopping Germany",
+          "Instagram Shopping DE",
+          "Instagram Deutschland",
+          "Instagram Germany"
+        ]
+      },
+      "available_platform_labels": [
+        "TikTok Shop",
+        "Amazon",
+        "SHEIN",
+        "Zalando",
+        "Temu",
+        "INS-DTC"
+      ],
+      "platform_alias_exclude_tokens": [],
+      "official_sources": {
+        "Amazon": {
+          "label": "About Amazon Germany",
+          "url": "https://www.aboutamazon.de/news"
+        }
+      },
+      "rakuten_press_path_date_pattern": "/(\\d{4})/(\\d{2})/(\\d{2})/",
+      "rakuten_press_date_group_mode": "ymd",
+      "tiktok_newsroom_lang": "de"
+    },
+    "es": {
+      "code": "es",
+      "label": "西班牙",
+      "consumer_label": "西班牙消费者",
+      "market_label": "西班牙市场",
+      "timezone": "Europe/Madrid",
+      "google_news_hl": "es",
+      "google_news_gl": "ES",
+      "google_news_ceid": "ES:es",
+      "bing_news_market": "es-ES",
+      "market_terms": [
+        "Spain",
+        "Spanish",
+        "España",
+        "español",
+        "西班牙",
+        "西班牙市场"
+      ],
+      "market_search_block": "(Spain OR Spanish OR España OR 西班牙 OR 西班牙市场)",
+      "xlsx_path": "country_data/es/source_survey.xlsx",
+      "include_xlsx_sources": false,
+      "extra_sources_path": "country_data/es/extra_sources.json",
+      "adapter_configs_path": "country_data/es/site_adapter_configs.json",
+      "site_credentials_path": "country_data/es/site_credentials.json",
+      "source_capability_cache_path": "country_data/es/source_capability_cache.json",
+      "output_slug": "es",
+      "legacy_output_prefixes": [],
+      "app_title": "新闻资讯抓取工具",
+      "promo_search_query_blocks": [
+        [
+          "promo_core",
+          "(Oferta OR Ofertas OR Descuento OR Descuentos OR Cupón OR Cupones OR Promoción OR Promociones OR Rebajas OR Venta OR Cashback OR \"Código descuento\" OR Sale OR Deal OR Coupon)"
+        ],
+        [
+          "points_rewards",
+          "(Puntos OR \"Puntos de fidelidad\" OR Fidelidad OR Lealtad OR Recompensa OR Recompensas OR Cashback OR Bono OR Bonificación OR Loyalty OR Rewards)"
+        ],
+        [
+          "price_event",
+          "(\"Oferta flash\" OR \"Tiempo limitado\" OR \"Por tiempo limitado\" OR \"Precio rebajado\" OR \"Bajada de precio\" OR \"Oferta especial\" OR Bundle OR Voucher)"
+        ],
+        [
+          "shopping_festivals",
+          "(\"Black Friday\" OR \"Cyber Monday\" OR \"Prime Day\" OR \"Festival de compras\" OR \"Temporada de compras\" OR Rebajas OR \"Rebajas de invierno\" OR \"Rebajas de verano\")"
+        ],
+        [
+          "seasonal_holidays",
+          "(Navidad OR Reyes OR \"San Valentín\" OR \"Día de la Madre\" OR \"Día del Padre\" OR \"Vuelta al cole\" OR Regalo OR Regalos OR Festivo OR Temporada)"
+        ]
+      ],
+      "related_news_query_blocks": [
+        [
+          "promo_core",
+          "(Oferta OR Ofertas OR Descuento OR Descuentos OR Cupón OR Cupones OR Promoción OR Promociones OR Rebajas OR Venta OR Cashback OR \"Código descuento\" OR Sale OR Deal OR Coupon)"
+        ],
+        [
+          "points_rewards",
+          "(Puntos OR \"Puntos de fidelidad\" OR Fidelidad OR Lealtad OR Recompensa OR Recompensas OR Cashback OR Bono OR Bonificación OR Loyalty OR Rewards)"
+        ],
+        [
+          "price_event",
+          "(\"Oferta flash\" OR \"Tiempo limitado\" OR \"Por tiempo limitado\" OR \"Precio rebajado\" OR \"Bajada de precio\" OR \"Oferta especial\" OR Bundle OR Voucher)"
+        ],
+        [
+          "shopping_festivals",
+          "(\"Black Friday\" OR \"Cyber Monday\" OR \"Prime Day\" OR \"Festival de compras\" OR \"Temporada de compras\" OR Rebajas OR \"Rebajas de invierno\" OR \"Rebajas de verano\")"
+        ],
+        [
+          "seasonal_holidays",
+          "(Navidad OR Reyes OR \"San Valentín\" OR \"Día de la Madre\" OR \"Día del Padre\" OR \"Vuelta al cole\" OR Regalo OR Regalos OR Festivo OR Temporada)"
+        ],
+        [
+          "consumer_experience_es",
+          "(\"experiencia de compra\" OR \"experiencia cliente\" OR \"experiencia de usuario\" OR \"satisfacción\" OR quejas OR reclamaciones OR reseñas OR consumidores)"
+        ],
+        [
+          "consumer_trust_es",
+          "(\"confianza del consumidor\" OR confianza OR seguridad OR fraude OR estafa OR falsificaciones OR \"productos falsos\" OR \"protección del consumidor\")"
+        ],
+        [
+          "privacy_data_es",
+          "(privacidad OR datos OR \"protección de datos\" OR seguridad OR ciberseguridad OR \"datos personales\")"
+        ],
+        [
+          "payment_checkout_es",
+          "(pago OR pagos OR checkout OR \"método de pago\" OR \"medios de pago\" OR tarjeta OR Bizum OR PayPal OR financiación)"
+        ],
+        [
+          "delivery_returns_es",
+          "(entrega OR envío OR envíos OR logística OR devolución OR devoluciones OR reembolso OR reembolsos OR \"plazo de entrega\")"
+        ],
+        [
+          "seller_marketplace_es",
+          "(vendedor OR vendedores OR marketplace OR \"comercio online\" OR comisión OR comisiones OR tarifas OR normas OR política OR políticas)"
+        ],
+        [
+          "platform_features_es",
+          "(app OR aplicación OR funciones OR funcionalidad OR recomendación OR recomendaciones OR algoritmo OR búsqueda OR reseñas OR valoraciones)"
+        ],
+        [
+          "regulatory_compliance_es",
+          "(regulación OR regulador OR competencia OR antimonopolio OR investigación OR sanción OR cumplimiento OR compliance OR \"protección del consumidor\")"
+        ],
+        [
+          "social_commerce_es",
+          "(\"social commerce\" OR \"live shopping\" OR livestream OR directo OR creadores OR creator OR \"TikTok Shop\" OR \"Instagram Shop\" OR \"compras en directo\")"
+        ]
+      ],
+      "report_query_blocks": [
+        [
+          "ranking_report",
+          "(Ranking OR Clasificación OR Comparativa OR Informe OR Estudio OR Encuesta OR Datos OR Estadística OR \"Cuota de mercado\" OR Índice OR Benchmark OR Barómetro OR Comparison OR Report OR Survey OR Data OR Statistics OR \"Market share\")"
+        ]
+      ],
+      "dimension_search_term_overrides": {},
+      "platform_display_overrides": {},
+      "platform_search_term_overrides": {
+        "Amazon": [
+          "Amazon",
+          "Amazon España",
+          "Amazon ES",
+          "Amazon.es"
+        ],
+        "SHEIN": [
+          "SHEIN",
+          "SHEIN España",
+          "SHEIN ES",
+          "shein.es"
+        ],
+        "INS-DTC（Instagram Shopping）": [
+          "INS-DTC（Instagram Shopping）",
+          "INS-DTC",
+          "Instagram Shopping",
+          "Instagram Shop",
+          "Instagram",
+          "Instagram DTC",
+          "IG",
+          "INS",
+          "Instagram Shopping España",
+          "Instagram Shopping Spain",
+          "Instagram Shopping ES",
+          "Instagram España",
+          "Instagram Spain"
+        ],
+        "Temu": [
+          "Temu",
+          "Temu España",
+          "Temu ES",
+          "temu.es"
+        ],
+        "TikTok Shop": [
+          "TikTok Shop",
+          "TikTok",
+          "TTS",
+          "TikTok Shop España",
+          "TikTok Shop Spain",
+          "TikTok Shop ES",
+          "TikTok España",
+          "TikTok Spain"
+        ],
+        "AliExpress": [
+          "AliExpress",
+          "AliExpress España",
+          "AliExpress Spain",
+          "AliExpress ES",
+          "AliExpress.es",
+          "AliExpress Plaza",
+          "AliExpress Plaza España",
+          "Ali Express"
+        ]
+      },
+      "default_platform_search_term_overrides": {
+        "Amazon": [
+          "Amazon España",
+          "Amazon ES",
+          "Amazon.es"
+        ],
+        "SHEIN": [
+          "SHEIN España",
+          "SHEIN ES",
+          "shein.es"
+        ],
+        "INS-DTC（Instagram Shopping）": [
+          "INS-DTC（Instagram Shopping）",
+          "INS-DTC",
+          "Instagram Shopping",
+          "Instagram Shop",
+          "Instagram",
+          "Instagram DTC",
+          "IG",
+          "INS",
+          "Instagram Shopping España",
+          "Instagram Shopping Spain",
+          "Instagram Shopping ES",
+          "Instagram España",
+          "Instagram Spain"
+        ],
+        "Temu": [
+          "Temu España",
+          "Temu ES",
+          "temu.es"
+        ],
+        "TikTok Shop": [
+          "TikTok Shop",
+          "TikTok",
+          "TTS",
+          "TikTok Shop España",
+          "TikTok Shop Spain",
+          "TikTok Shop ES",
+          "TikTok España",
+          "TikTok Spain"
+        ],
+        "Instagram Shopping": [
+          "Instagram Shopping",
+          "Instagram Shop",
+          "Instagram",
+          "Instagram DTC",
+          "IG",
+          "INS",
+          "Instagram Shopping España",
+          "Instagram Shopping Spain",
+          "Instagram Shopping ES",
+          "Instagram España",
+          "Instagram Spain"
+        ],
+        "AliExpress": [
+          "AliExpress",
+          "AliExpress España",
+          "AliExpress Spain",
+          "AliExpress ES",
+          "AliExpress.es",
+          "AliExpress Plaza",
+          "AliExpress Plaza España",
+          "Ali Express"
+        ]
+      },
+      "available_platform_labels": [
+        "Amazon",
+        "AliExpress",
+        "SHEIN",
+        "INS-DTC（Instagram Shopping）",
+        "Temu",
+        "TikTok Shop"
+      ],
+      "platform_alias_exclude_tokens": [],
+      "official_sources": {
+        "Amazon": {
+          "label": "About Amazon Spain",
+          "url": "https://www.aboutamazon.es/news"
+        }
+      },
+      "rakuten_press_path_date_pattern": "/(\\d{4})/(\\d{2})/(\\d{2})/",
+      "rakuten_press_date_group_mode": "ymd",
+      "tiktok_newsroom_lang": "es"
+    },
+    "italy": {
+      "code": "italy",
+      "label": "意大利",
+      "consumer_label": "意大利消费者",
+      "market_label": "意大利市场",
+      "timezone": "Europe/Rome",
+      "google_news_hl": "it",
+      "google_news_gl": "IT",
+      "google_news_ceid": "IT:it",
+      "bing_news_market": "it-IT",
+      "market_terms": [
+        "Italy",
+        "Italian",
+        "Italia",
+        "意大利",
+        "意大利市场"
+      ],
+      "market_search_block": "(Italy OR Italian OR Italia OR 意大利 OR 意大利市场)",
+      "xlsx_path": "country_data/italy/source_survey.xlsx",
+      "include_xlsx_sources": false,
+      "extra_sources_path": "country_data/italy/extra_sources.json",
+      "adapter_configs_path": "country_data/italy/site_adapter_configs.json",
+      "site_credentials_path": "country_data/italy/site_credentials.json",
+      "source_capability_cache_path": "country_data/italy/source_capability_cache.json",
+      "output_slug": "italy",
+      "legacy_output_prefixes": [],
+      "app_title": "新闻资讯抓取工具",
+      "promo_search_query_blocks": [
+        [
+          "promo_core",
+          "(offerta OR offerte OR sconto OR sconti OR promozione OR promozioni OR coupon OR \"codice sconto\" OR saldi OR vendita OR affare OR deal OR cashback)"
+        ],
+        [
+          "points_rewards",
+          "(punti OR \"punti fedeltà\" OR fedeltà OR cashback OR premio OR premi OR ricompensa OR ricompense OR loyalty OR reward OR rewards)"
+        ],
+        [
+          "price_event",
+          "(\"offerta lampo\" OR \"tempo limitato\" OR \"per poco tempo\" OR ribasso OR \"taglio prezzo\" OR \"offerta speciale\" OR bundle OR voucher)"
+        ],
+        [
+          "shopping_festivals",
+          "(\"Black Friday\" OR \"Cyber Monday\" OR \"Prime Day\" OR \"festival dello shopping\" OR \"stagione dello shopping\" OR saldi OR \"saldi estivi\" OR \"saldi invernali\")"
+        ],
+        [
+          "seasonal_holidays",
+          "(Natale OR Pasqua OR \"San Valentino\" OR \"Festa della Mamma\" OR \"Festa del Papà\" OR \"rientro a scuola\" OR regalo OR regali OR festivo OR stagionale)"
+        ]
+      ],
+      "related_news_query_blocks": [
+        [
+          "promo_core",
+          "(offerta OR offerte OR sconto OR sconti OR promozione OR promozioni OR coupon OR \"codice sconto\" OR saldi OR vendita OR affare OR deal OR cashback)"
+        ],
+        [
+          "points_rewards",
+          "(punti OR \"punti fedeltà\" OR fedeltà OR cashback OR premio OR premi OR ricompensa OR ricompense OR loyalty OR reward OR rewards)"
+        ],
+        [
+          "price_event",
+          "(\"offerta lampo\" OR \"tempo limitato\" OR \"per poco tempo\" OR ribasso OR \"taglio prezzo\" OR \"offerta speciale\" OR bundle OR voucher)"
+        ],
+        [
+          "shopping_festivals",
+          "(\"Black Friday\" OR \"Cyber Monday\" OR \"Prime Day\" OR \"festival dello shopping\" OR \"stagione dello shopping\" OR saldi OR \"saldi estivi\" OR \"saldi invernali\")"
+        ],
+        [
+          "seasonal_holidays",
+          "(Natale OR Pasqua OR \"San Valentino\" OR \"Festa della Mamma\" OR \"Festa del Papà\" OR \"rientro a scuola\" OR regalo OR regali OR festivo OR stagionale)"
+        ]
+      ],
+      "report_query_blocks": [
+        [
+          "ranking_report",
+          "(classifica OR graduatoria OR comparativo OR studio OR rapporto OR ricerca OR sondaggio OR dati OR statistiche OR \"quota di mercato\" OR indice OR benchmark OR barometro OR rank OR ranking OR report OR \"market share\")"
+        ]
+      ],
+      "dimension_search_term_overrides": {},
+      "platform_display_overrides": {},
+      "platform_search_term_overrides": {
+        "TTS": [
+          "TTS",
+          "TTS IT",
+          "TTS Italy",
+          "TTS Italian",
+          "TTS Italia",
+          "TikTok Shop",
+          "TikTok Shop IT",
+          "TikTok Shop Italy",
+          "TikTok Shop Italian",
+          "TikTok Shop Italia",
+          "TikTok",
+          "TikTok IT",
+          "TikTok Italy",
+          "TikTok Italian",
+          "TikTok Italia",
+          "TT Shop",
+          "TT Shop IT",
+          "TT Shop Italy",
+          "TT Shop Italian",
+          "TT Shop Italia"
+        ],
+        "Amazon": [
+          "Amazon",
+          "Amazon Italy",
+          "Amazon IT",
+          "Amazon.it",
+          "Amazon Italian",
+          "Amazon Italia"
+        ],
+        "eBay": [
+          "eBay",
+          "eBay IT",
+          "eBay Italy",
+          "eBay Italian",
+          "eBay Italia",
+          "eBay.it"
+        ],
+        "SHEIN": [
+          "SHEIN",
+          "SHEIN Italy",
+          "SHEIN Italia",
+          "SHEIN IT",
+          "SHEIN Italian",
+          "Shein",
+          "Shein IT",
+          "Shein Italy",
+          "Shein Italian",
+          "Shein Italia"
+        ],
+        "TEMU": [
+          "TEMU",
+          "Temu",
+          "Temu Italy",
+          "Temu Italia",
+          "Temu IT",
+          "Temu Italian",
+          "TEMU IT",
+          "TEMU Italy",
+          "TEMU Italian",
+          "TEMU Italia"
+        ],
+        "IG": [
+          "IG",
+          "IG IT",
+          "IG Italy",
+          "IG Italian",
+          "IG Italia",
+          "Instagram Shopping",
+          "Instagram Shopping IT",
+          "Instagram Shopping Italy",
+          "Instagram Shopping Italian",
+          "Instagram Shopping Italia",
+          "Instagram Shop",
+          "Instagram Shop IT",
+          "Instagram Shop Italy",
+          "Instagram Shop Italian",
+          "Instagram Shop Italia",
+          "Instagram",
+          "Instagram IT",
+          "Instagram Italy",
+          "Instagram Italian",
+          "Instagram Italia",
+          "Instagram DTC",
+          "Instagram DTC IT",
+          "Instagram DTC Italy",
+          "Instagram DTC Italian",
+          "Instagram DTC Italia",
+          "INS",
+          "INS IT",
+          "INS Italy",
+          "INS Italian",
+          "INS Italia",
+          "INS-DTC",
+          "INS-DTC IT",
+          "INS-DTC Italy",
+          "INS-DTC Italian",
+          "INS-DTC Italia"
+        ],
+        "Zalando": [
+          "Zalando",
+          "Zalando Italy",
+          "Zalando Italia",
+          "Zalando IT",
+          "Zalando.it",
+          "Zalando Italian"
+        ]
+      },
+      "default_platform_search_term_overrides": {
+        "Amazon": [
+          "Amazon Italy",
+          "Amazon IT",
+          "Amazon.it",
+          "Amazon Italian",
+          "Amazon Italia"
+        ],
+        "Zalando": [
+          "Zalando Italy",
+          "Zalando Italia",
+          "Zalando IT",
+          "Zalando.it",
+          "Zalando Italian"
+        ],
+        "SHEIN": [
+          "SHEIN Italy",
+          "SHEIN Italia",
+          "SHEIN IT",
+          "SHEIN Italian",
+          "Shein",
+          "Shein IT",
+          "Shein Italy",
+          "Shein Italian",
+          "Shein Italia"
+        ],
+        "IG": [
+          "IG",
+          "IG IT",
+          "IG Italy",
+          "IG Italian",
+          "IG Italia",
+          "Instagram Shopping",
+          "Instagram Shopping IT",
+          "Instagram Shopping Italy",
+          "Instagram Shopping Italian",
+          "Instagram Shopping Italia",
+          "Instagram Shop",
+          "Instagram Shop IT",
+          "Instagram Shop Italy",
+          "Instagram Shop Italian",
+          "Instagram Shop Italia",
+          "Instagram",
+          "Instagram IT",
+          "Instagram Italy",
+          "Instagram Italian",
+          "Instagram Italia",
+          "Instagram DTC",
+          "Instagram DTC IT",
+          "Instagram DTC Italy",
+          "Instagram DTC Italian",
+          "Instagram DTC Italia",
+          "INS",
+          "INS IT",
+          "INS Italy",
+          "INS Italian",
+          "INS Italia",
+          "INS-DTC",
+          "INS-DTC IT",
+          "INS-DTC Italy",
+          "INS-DTC Italian",
+          "INS-DTC Italia"
+        ],
+        "Temu": [
+          "Temu Italy",
+          "Temu Italia",
+          "Temu IT",
+          "Temu Italian",
+          "TEMU",
+          "TEMU IT",
+          "TEMU Italy",
+          "TEMU Italian",
+          "TEMU Italia"
+        ],
+        "TTS": [
+          "TTS",
+          "TTS IT",
+          "TTS Italy",
+          "TTS Italian",
+          "TTS Italia",
+          "TikTok Shop",
+          "TikTok Shop IT",
+          "TikTok Shop Italy",
+          "TikTok Shop Italian",
+          "TikTok Shop Italia",
+          "TikTok",
+          "TikTok IT",
+          "TikTok Italy",
+          "TikTok Italian",
+          "TikTok Italia",
+          "TT Shop",
+          "TT Shop IT",
+          "TT Shop Italy",
+          "TT Shop Italian",
+          "TT Shop Italia"
+        ],
+        "Instagram Shopping": [
+          "Instagram Shopping",
+          "Instagram Shop",
+          "Instagram",
+          "Instagram Shopping Italy",
+          "Instagram Italia",
+          "Instagram ecommerce Italy",
+          "Instagram Shopping IT",
+          "Instagram Shopping Italian",
+          "Instagram Shopping Italia",
+          "Instagram Shop IT",
+          "Instagram Shop Italy",
+          "Instagram Shop Italian",
+          "Instagram Shop Italia",
+          "Instagram IT",
+          "Instagram Italy",
+          "Instagram Italian",
+          "Instagram DTC",
+          "Instagram DTC IT",
+          "Instagram DTC Italy",
+          "Instagram DTC Italian",
+          "Instagram DTC Italia",
+          "IG",
+          "IG IT",
+          "IG Italy",
+          "IG Italian",
+          "IG Italia",
+          "INS",
+          "INS IT",
+          "INS Italy",
+          "INS Italian",
+          "INS Italia",
+          "INS-DTC",
+          "INS-DTC IT",
+          "INS-DTC Italy",
+          "INS-DTC Italian",
+          "INS-DTC Italia"
+        ],
+        "TikTok Shop": [
+          "TikTok Shop",
+          "TikTok",
+          "TikTok Shop Italy",
+          "TikTok Italia",
+          "TikTok Shop IT",
+          "TikTok ecommerce Italy",
+          "TikTok Shop Italian",
+          "TikTok Shop Italia",
+          "TikTok IT",
+          "TikTok Italy",
+          "TikTok Italian",
+          "TTS",
+          "TTS IT",
+          "TTS Italy",
+          "TTS Italian",
+          "TTS Italia",
+          "TT Shop",
+          "TT Shop IT",
+          "TT Shop Italy",
+          "TT Shop Italian",
+          "TT Shop Italia"
+        ]
+      },
+      "available_platform_labels": [
+        "TTS",
+        "Amazon",
+        "eBay",
+        "SHEIN",
+        "TEMU",
+        "IG"
+      ],
+      "platform_alias_exclude_tokens": [],
+      "official_sources": {
+        "Amazon": {
+          "label": "About Amazon Italy",
+          "url": "https://www.aboutamazon.it/news"
+        }
+      },
+      "rakuten_press_path_date_pattern": "/(\\d{4})/(\\d{2})/(\\d{2})/",
+      "rakuten_press_date_group_mode": "ymd",
+      "tiktok_newsroom_lang": "it"
+    }
+  }
+}

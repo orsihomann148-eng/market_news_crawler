@@ -1,0 +1,3721 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ app_title }} - Web 控制台</title>
+  <style>
+    :root { --bg:#f3efe7; --panel:#fffdf9; --text:#1f2937; --muted:#6b7280; --line:#dfd6c8; --brand:#0f766e; --brand-dark:#115e59; --soft:#e8f4f1; --accent:#b45309; --shadow:0 18px 40px rgba(31,41,55,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;background:radial-gradient(circle at top left,#f8f4ec 0,#f3efe7 40%,#efe7da 100%);color:var(--text)}
+    .wrap{max-width:1280px;margin:0 auto;padding:28px 24px 36px}
+    .hero{margin-bottom:20px;padding:28px;border:1px solid rgba(180,83,9,.12);border-radius:24px;background:linear-gradient(135deg,rgba(15,118,110,.92),rgba(17,94,89,.88)),linear-gradient(135deg,#0f766e,#b45309);box-shadow:var(--shadow);color:#f8fafc}
+    .eyebrow{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+    h1{margin:14px 0 10px;font-size:30px;line-height:1.15}
+    .sub{max-width:760px;color:rgba(248,250,252,.86);line-height:1.65}
+    .grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(320px,1fr);gap:20px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+    .tabs{position:sticky;top:12px;z-index:30;display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px;padding:10px 0 14px;background:linear-gradient(180deg,rgba(255,253,249,.98) 0,rgba(255,253,249,.94) 75%,rgba(255,253,249,0) 100%);backdrop-filter:blur(8px)}
+    .tab{display:inline-flex;align-items:center;padding:9px 14px;border-radius:999px;background:#f6f1e9;color:#5b6470;font-size:14px;border:1px solid transparent;text-decoration:none}
+    .tab.active{background:var(--soft);color:var(--brand-dark);border-color:rgba(15,118,110,.16);font-weight:600}
+    .panel-title{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;scroll-margin-top:88px}
+    .panel-title h2{margin:0;font-size:20px}
+    .panel-title p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+    .section{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);scroll-margin-top:88px}
+    .section:first-of-type{margin-top:0;padding-top:0;border-top:none}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .section-head h3{margin:0;font-size:18px}
+    .collapsible-section{padding-top:16px}
+    .collapsible-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;list-style:none}
+    .collapsible-summary::-webkit-details-marker{display:none}
+    .collapsible-title{display:flex;flex-direction:column;gap:4px}
+    .collapsible-title strong{font-size:18px;color:var(--text)}
+    .collapsible-title span{font-size:13px;color:var(--muted)}
+    .collapsible-body{margin-top:16px}
+    .badge{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:#fcf1dd;color:var(--accent);font-size:12px;font-weight:600}
+    .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .row-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .row-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .hidden{display:none!important}
+    label{display:block;font-size:13px;color:#374151;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d9d1c3;border-radius:12px;font:inherit;background:#fff;transition:border-color .18s ease,box-shadow .18s ease}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(15,118,110,.55);box-shadow:0 0 0 4px rgba(15,118,110,.12)}
+    input:disabled,select:disabled,textarea:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed;box-shadow:none}
+    textarea{min-height:92px;resize:vertical}
+    .checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .check{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer}
+    .check input{width:18px;height:18px;min-width:18px;accent-color:var(--brand);margin:0;flex-shrink:0}
+    .stack{display:grid;gap:12px}
+    .inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px}
+    .input-with-side-action{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+    .input-with-side-action .check{margin:0;white-space:nowrap;height:100%}
+    .ai-config-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+    .ai-config-grid>div:nth-child(1),.ai-config-grid>div:nth-child(2){grid-column:span 2}
+    .ai-config-grid>div:nth-child(3){grid-column:span 2}
+    .api-action-cell{display:flex;align-items:center;gap:10px;grid-column:span 2;min-width:0}
+    .api-action-cell .mini-btn{margin-bottom:0;flex-shrink:0}
+    .api-action-cell .api-test-feedback{margin-top:0;min-height:0;min-width:0;overflow-wrap:anywhere;line-height:1.5}
+    .mini-btn{border:1px solid #cdd8d5;background:#fff;color:var(--brand-dark);padding:7px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:12px;font-weight:600}
+    .mini-btn.save-action{border-color:transparent;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 8px 16px rgba(15,118,110,.14)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn{border:none;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;padding:11px 18px;border-radius:12px;cursor:pointer;font:inherit;font-weight:600;box-shadow:0 10px 20px rgba(15,118,110,.16)}
+    .btn.is-pending,.mini-btn.is-pending{transform:translateY(1px);opacity:.9}
+    .mini-btn.is-pending{background:var(--soft);border-color:rgba(15,118,110,.22)}
+    .briefing-timer{align-self:center;min-width:92px;font-size:13px;color:var(--brand-dark)}
+    .article-action-feedback{min-height:18px;font-size:12px;color:var(--brand-dark);margin-top:8px}
+    .article-summary-panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .article-summary-panel textarea{min-height:260px;line-height:1.65}
+    .api-test-feedback{min-height:18px;font-size:12px;color:var(--brand-dark);margin-top:8px}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+    .aside-stack{display:grid;gap:20px}
+    .field-block{display:grid;gap:6px}
+    .btn:disabled{opacity:.72;cursor:progress;box-shadow:none}
+    .result{background:#0f172a;color:#e5e7eb;border-radius:16px;padding:14px;white-space:pre-wrap;overflow:auto;max-height:460px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;margin-bottom:10px}
+    .ok{background:#ecfdf5;color:#065f46}
+    .bad{background:#fef2f2;color:#991b1b}
+    .progress-panel{padding:14px;border:1px solid var(--line);border-radius:16px;background:#f7fbfa}
+    .progress-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+    .progress-title{font-size:14px;font-weight:600;color:#0f172a}
+    .progress-stage{font-size:12px;color:var(--muted)}
+    .progress-current{margin-top:4px;font-size:12px;color:#47615c}
+    .progress-bar{height:10px;border-radius:999px;background:#dbe7e4;overflow:hidden}
+    .progress-fill{height:100%;width:0;background:linear-gradient(135deg,var(--brand),var(--brand-dark));transition:width .35s ease}
+    .progress-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:12px}
+    .progress-stat{padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #e4ebe9}
+    .progress-stat strong{display:block;font-size:13px;color:#0f172a}
+    .progress-stat span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+    ul{margin:0;padding-left:18px}
+    .dir{padding:12px 0;border-top:1px solid var(--line)}
+    .dir:first-child{border-top:none}
+    .muted{color:var(--muted)}
+    .mini-note{padding:12px 14px;border-radius:14px;background:#f7f3ec;color:#5b6470;font-size:13px;line-height:1.6}
+    .article-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;align-items:end}
+    .article-list{display:grid;gap:14px}
+    .article-card{position:relative;padding:16px 16px 16px 16px;border:1px solid var(--line);border-radius:18px;background:#fff}
+    .article-card.is-starred{border-color:#f2c46f;box-shadow:0 10px 24px rgba(180,83,9,.08)}
+    .article-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .article-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#eef6f4;color:#0f766e;font-size:12px;font-weight:600}
+    .article-chip.starred{background:#fff3d8;color:#9a6700;padding:4px 9px}
+    .article-chip.sentiment-positive{background:#ecfdf5;color:#047857}
+    .article-chip.sentiment-neutral{background:#f3f4f6;color:#4b5563}
+    .article-chip.sentiment-negative{background:#fef2f2;color:#b91c1c}
+    .article-title{margin:0 0 8px;font-size:18px;line-height:1.45}
+    .article-title a{color:#0f172a;text-decoration:none}
+    .article-title a:hover{color:var(--brand-dark);text-decoration:underline}
+    .article-summary{margin:0;color:#4b5563;line-height:1.7;font-size:14px}
+    .article-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+    .article-links a{color:var(--brand-dark);font-size:13px;font-weight:600;text-decoration:none}
+    .article-links a:hover{text-decoration:underline}
+    .article-star-btn{border:1px solid #d7cfbf;background:#fff;color:#73510d;padding:7px 11px;border-radius:999px;cursor:pointer;font:inherit;font-size:16px;line-height:1;font-weight:700;min-width:42px}
+    .article-star-btn.is-starred{background:#fff3d8;border-color:#f2c46f;color:#9a6700}
+    .article-star-btn:disabled{opacity:.7;cursor:progress}
+    .article-card .article-star-btn{position:absolute;top:14px;right:14px;z-index:2}
+    .article-star-filter-row{display:flex;justify-content:flex-end;align-items:center;margin:14px 0 4px}
+    .article-star-filter-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+    .article-star-filter-row label{margin:0;font-size:13px;color:#374151}
+    .article-star-filter-row select{width:auto;min-width:132px}
+    .article-empty{padding:18px;border:1px dashed var(--line);border-radius:18px;background:#fffdf9;color:var(--muted);line-height:1.7}
+    #manual-article-form input[type="checkbox"]{width:auto;margin-right:8px;accent-color:var(--brand)}
+    .source-card-list{display:grid;gap:14px}
+    .source-card{padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff}
+    .source-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+    .source-card-title{margin:0;font-size:16px;line-height:1.5;word-break:break-word}
+    .source-card-url{font-size:13px;color:#47615c;word-break:break-all}
+    .source-card-meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+    .source-tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600}
+    .source-tag.status-active{background:#ecfdf5;color:#065f46}
+    .source-tag.status-inactive{background:#f3f4f6;color:#4b5563}
+    .source-tag.risk-low{background:#ecfdf5;color:#166534}
+    .source-tag.risk-medium{background:#fff7ed;color:#9a3412}
+    .source-tag.risk-high{background:#fef2f2;color:#b91c1c}
+    .source-tag.risk-unknown{background:#eef2ff;color:#4338ca}
+    .source-tag.capability{background:#eef6f4;color:#0f766e}
+    .source-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+    .source-detail{padding:10px 12px;border-radius:12px;background:#f8fafb;border:1px solid #e5e7eb}
+    .source-detail strong{display:block;font-size:12px;color:#0f172a;margin-bottom:4px}
+    .source-detail span{display:block;font-size:12px;color:#5b6470;line-height:1.6;word-break:break-word}
+    .source-list-feedback{min-height:18px;font-size:12px;color:var(--brand-dark);margin-top:8px}
+    .source-filter-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+    .mono-path{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#5b6470;word-break:break-all}
+    #article-results-anchor{scroll-margin-top:88px}
+    @media (max-width: 980px){.grid,.row,.row-3,.row-4,.article-toolbar,.ai-config-grid{grid-template-columns:1fr}.ai-config-grid>div:nth-child(1),.ai-config-grid>div:nth-child(2),.ai-config-grid>div:nth-child(3),.api-action-cell{grid-column:auto}.checklist{grid-template-columns:1fr}.wrap{padding:18px}.hero{padding:22px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Web Console</div>
+    <h1>{{ app_title }}</h1>
+    <div class="inline-actions">
+      <a class="mini-btn" href="{{ url_for('index', country_code=selected_country_code) }}">普通用户模式</a>
+      <a class="mini-btn" href="{{ url_for('logout') }}">退出登录</a>
+    </div>
+    <div class="sub">把常用命令整理成更清晰的浏览器控制台。当前国家：{{ selected_country_label }}。网站库、搜索地区、输出结果和来源管理都会跟随国家切换。</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="tabs">
+        <button type="button" class="tab js-top-tab {{ 'active' if active_tab == 'home' else '' }}" data-scroll-target="dashboard-top">总览</button>
+        <button type="button" class="tab js-top-tab {{ 'active' if active_tab == 'news' else '' }}" data-scroll-target="news-section">新闻抓取</button>
+        <button type="button" class="tab js-top-tab {{ 'active' if active_tab == 'articles' else '' }}" data-scroll-target="article-section">新闻查看</button>
+        <button type="button" class="tab js-top-tab {{ 'active' if active_tab == 'countries' else '' }}" data-scroll-target="country-section">国家管理</button>
+        <button type="button" class="tab js-top-tab {{ 'active' if active_tab == 'sources' else '' }}" data-scroll-target="source-section">来源管理</button>
+      </div>
+
+      <div class="panel-title" id="dashboard-top">
+        <div>
+          <h2>控制台功能</h2>
+          <p>当前页面保留四个高频入口：`新闻抓取`、`新闻查看`、`国家管理` 与 `来源管理`。你可以先抓取，再直接在网页端浏览新闻结果并点击进入原文。</p>
+        </div>
+        <div class="badge">当前聚焦 4 个模块</div>
+      </div>
+
+      <div class="section" id="news-section">
+        <div class="section-head">
+          <h3>1）新闻抓取</h3>
+          <span class="badge">按来源网站抓取</span>
+        </div>
+        <form method="get" action="{{ url_for('developer') }}" id="news-country-switch-form" class="hidden" aria-hidden="true">
+          <input type="hidden" name="tab" value="news">
+        </form>
+        <form method="post" action="/run/news-crawler" class="js-manual-submit-form" data-async-url="/api/run/news-crawler" data-job-target="news">
+          <input type="hidden" name="country_code" value="{{ selected_country_code }}">
+          <div class="section">
+            <div class="stack">
+              <div class="section-head" style="padding:0;">
+                <h4 style="margin:0;">AI 配置</h4>
+                <span class="badge">筛选、优化关键词、生成资讯表共用</span>
+              </div>
+              <div class="ai-config-grid">
+                <div>
+                  <label>AI API URL</label>
+                  <input name="survey_api_url" id="news-survey-api-url" value="{{ news_filter_state.survey_api_url }}" placeholder="https://.../v1/chat/completions">
+                </div>
+                <div>
+                  <label>AI API Key</label>
+                  <div class="input-with-side-action">
+                  <input type="password" name="survey_api_key" id="news-survey-api-key" value="{{ news_filter_state.survey_api_key }}" placeholder="sk-...">
+                  <label class="check">
+                    <input type="checkbox" class="js-toggle-password" data-target="news-survey-api-key">
+                    显示实际内容
+                  </label>
+                  </div>
+                </div>
+                <div>
+                  <label>AI 模型</label>
+                  <input name="survey_api_model" id="news-survey-api-model" value="{{ news_filter_state.survey_api_model }}" placeholder="gpt-4.1-mini">
+                </div>
+                <div class="api-action-cell">
+                    <button type="button" class="mini-btn" id="news-survey-api-test">测试 API</button>
+                  <div class="api-test-feedback" id="news-survey-api-feedback" aria-live="polite"></div>
+                </div>
+              </div>
+              <div class="hint">这里是新闻抓取相关 AI 功能的统一配置入口：AI 理解筛选、AI 优化别名、AI 优化检索关键词、AI 优化提示词和资讯表生成都会复用这一套配置。</div>
+            </div>
+          </div>
+          <div class="row-4">
+            <div>
+              <label>国家切换</label>
+              <select name="country_code" id="news-country-select" form="news-country-switch-form">
+                {% for country_value, country_label in country_options %}
+                <option value="{{ country_value }}" {% if country_value == selected_country_code %}selected{% endif %}>{{ country_label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>时间模式</label>
+              <select name="date_mode" id="news-date-mode">
+                <option value="days" {% if news_form_state.date_mode == 'days' %}selected{% endif %}>最近 N 天</option>
+                <option value="range" {% if news_form_state.date_mode == 'range' %}selected{% endif %}>指定日期范围</option>
+              </select>
+            </div>
+            <div id="news-days-field">
+              <label>最近天数</label>
+              <input name="days" id="news-days-input" value="{{ news_form_state.days }}">
+            </div>
+            <div id="news-translate-field">
+              <label>翻译语言</label>
+              <select name="translate_to">
+                <option value="zh-CN" {% if news_form_state.translate_to == 'zh-CN' %}selected{% endif %}>zh-CN</option>
+                <option value="en" {% if news_form_state.translate_to == 'en' %}selected{% endif %}>en</option>
+              </select>
+            </div>
+          </div>
+          <div class="row hidden" id="news-range-fields">
+            <div><label>开始日期</label><input type="date" name="start_date" id="news-start-date" value="{{ news_form_state.start_date }}"></div>
+            <div><label>结束日期</label><input type="date" name="end_date" id="news-end-date" value="{{ news_form_state.end_date }}"></div>
+          </div>
+          <div class="section">
+            <div class="stack">
+              <div>
+                <label>已有品牌</label>
+                <div class="inline-actions">
+                  <button type="button" class="mini-btn" id="news-select-all">全选</button>
+                  <button type="button" class="mini-btn" id="news-clear-all">全不选</button>
+                </div>
+                <div class="checklist">
+                  {% for platform in news_platform_ui.known_platforms %}
+                  <label class="check">
+                    <input
+                      type="checkbox"
+                      name="news_builtin_platforms"
+                      value="{{ platform }}"
+                      {% if platform in news_platform_ui.selected_known_platforms %}checked{% endif %}
+                    >
+                    {{ platform_display_labels.get(platform, platform) }}
+                  </label>
+                  {% endfor %}
+                </div>
+                <details style="margin-top:12px;">
+                  <summary class="mini-btn" style="display:inline-flex;list-style:none;cursor:pointer;">查看和修改品牌搜索别名</summary>
+                  <div class="field-block" style="margin-top:12px;">
+                    <label>搜索别名</label>
+                    <textarea name="platform_aliases_text" id="country-alias-text" style="min-height:180px;">{{ platform_alias_state.text }}</textarea>
+                    <div class="hint">每行格式：品牌 | 别名 1 | 别名 2。保存后会影响默认品牌的补充新闻搜索、报告搜索和新闻结果匹配。</div>
+                    <div class="inline-actions">
+                      <button type="button" class="mini-btn save-action" id="country-alias-submit">保存别名</button>
+                      <button type="button" class="mini-btn save-action" id="country-alias-ai-optimize">AI 优化别名</button>
+                      <button type="button" class="mini-btn" id="country-alias-previous">恢复上一次</button>
+                      <button type="button" class="mini-btn" id="country-alias-reset">恢复系统默认</button>
+                    </div>
+                    <details id="country-alias-ai-settings" style="margin-top:10px;">
+                      <summary class="mini-btn" style="display:inline-flex;list-style:none;cursor:pointer;">
+                        <span id="country-alias-ai-status">
+                          {% if news_filter_state.survey_api_url and news_filter_state.survey_api_key and news_filter_state.survey_api_model %}
+                          AI 配置已填写：{{ news_filter_state.survey_api_model }}
+                          {% else %}
+                          设置 AI API
+                          {% endif %}
+                        </span>
+                      </summary>
+                      <div class="hint" style="margin-top:12px;">AI 优化别名会使用页面最上方的“AI 配置”。如果缺少 API URL、Key 或模型名，请先到顶部填写。</div>
+                    </details>
+                    <div class="api-test-feedback" id="country-alias-feedback" aria-live="polite"></div>
+                  </div>
+                </details>
+              </div>
+              <div>
+                <label>新增品牌</label>
+                <textarea name="news_custom_platforms" placeholder="每行一个新品牌，例如&#10;Mercari&#10;Yahoo! Shopping">{{ news_platform_ui.custom_platforms_text }}</textarea>
+                <div class="hint">上面勾选已有品牌，下面补充新的品牌名。系统会自动合并去重后再开始抓取。</div>
+              </div>
+              <div>
+                <label>侧别选择</label>
+                <div class="checklist">
+                  {% for side_value, side_label in sides %}
+                  <label class="check">
+                    <input
+                      type="checkbox"
+                      name="news_sides"
+                      value="{{ side_value }}"
+                      {% if side_value in selected_news_sides %}checked{% endif %}
+                    >
+                    {{ side_label }}
+                  </label>
+                  {% endfor %}
+                </div>
+                <div class="hint">媒体侧会自动映射到全部已选品牌，并在媒体来源网站里逐个品牌搜索；买家侧和卖家侧只抓取对应品牌自己的来源。</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div><label>输出目录</label><input name="output_dir" value="{{ news_form_state.output_dir }}"></div>
+          </div>
+          <div class="section">
+            <div class="stack">
+              <div class="row">
+                <div>
+                  <label>补充检索任务</label>
+                  <label class="check">
+                    <input type="checkbox" name="related_news_search_enabled" id="news-promo-search-enabled" value="1" {% if news_filter_state.related_news_search_enabled %}checked{% endif %}>
+                    抓取相关新闻：按“每个品牌 × 每行关键词块”补充检索相关新闻，指标归属交给后续 AI 筛选判断
+                  </label>
+                  <label class="check" style="margin-top:10px;">
+                    <input type="checkbox" name="report_ranking_search_enabled" id="news-report-search-enabled" value="1" {% if news_filter_state.report_ranking_search_enabled %}checked{% endif %}>
+                    抓取数据和报告：按“品牌组 × 每行关键词块”补充检索排名、报告、研究、调查和数据比较，再由 AI 判断对应指标
+                  </label>
+                </div>
+                <div>
+                  <label>搜索引擎</label>
+                  <select name="promo_search_engine" id="news-promo-search-engine">
+                    <option value="both" {% if news_filter_state.promo_search_engine == 'both' %}selected{% endif %}>Google + Bing</option>
+                    <option value="google" {% if news_filter_state.promo_search_engine == 'google' %}selected{% endif %}>Google</option>
+                    <option value="bing" {% if news_filter_state.promo_search_engine == 'bing' %}selected{% endif %}>Bing</option>
+                  </select>
+                </div>
+              </div>
+              <div class="stack" id="news-promo-keyword-fields">
+                <details>
+                  <summary class="mini-btn" style="display:inline-flex;list-style:none;cursor:pointer;">查看和修改补充检索关键词</summary>
+                  <div class="field-block" style="margin-top:12px;">
+                    <label>相关新闻关键词块</label>
+                    <textarea
+                      name="related_news_search_keywords"
+                      id="news-promo-search-keywords"
+                      style="min-height:140px;"
+                    >{{ news_filter_state.related_news_search_keywords }}</textarea>
+                    <textarea id="news-promo-search-keywords-default" class="hidden" aria-hidden="true">{{ default_related_news_search_keywords_text }}</textarea>
+                    <div class="hint">系统会把“品牌词 + 这一行关键词 + {{ selected_country_label }}限定词”拼成相关新闻检索语句，指标映射交给后续 AI 完成。</div>
+                  </div>
+                  <div class="field-block" style="margin-top:12px;">
+                    <label>数据/报告关键词块</label>
+                    <textarea
+                      name="report_search_keywords"
+                      id="news-report-search-keywords"
+                      style="min-height:140px;"
+                    >{{ news_filter_state.report_search_keywords }}</textarea>
+                    <textarea id="news-report-search-keywords-default" class="hidden" aria-hidden="true">{{ default_report_search_keywords_text }}</textarea>
+                    <div class="inline-actions">
+                      <button type="button" class="mini-btn save-action" id="news-promo-search-keywords-ai-optimize">AI 优化检索关键词</button>
+                      <button type="button" class="mini-btn save-action" id="news-promo-search-keywords-save">保存关键词</button>
+                      <button type="button" class="mini-btn" id="news-promo-search-keywords-previous">恢复上一次</button>
+                      <button type="button" class="mini-btn" id="news-promo-search-keywords-reset">恢复系统默认</button>
+                    </div>
+                    <div class="api-test-feedback" id="news-promo-search-keywords-feedback" aria-live="polite"></div>
+                    <div class="hint">系统会把“品牌组 + 这一行关键词 + {{ selected_country_label }}限定词”拼成品牌间对比/排名/报告检索语句，指标映射交给后续 AI 完成。</div>
+                  </div>
+                </details>
+              </div>
+              <div class="hint">这一步会补充两类结果：相关新闻，以及面向品牌间同期比较的数据/报告。随后系统会继续去重，并把指标映射写入输出文件。</div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="stack">
+              <div class="row-3">
+                <div>
+                  <label>指标筛选方式</label>
+                  <select name="survey_filter_mode" id="news-survey-filter-mode">
+                    <option value="keyword" {% if news_filter_state.survey_filter_mode == 'keyword' %}selected{% endif %}>关键词匹配</option>
+                    <option value="ai" {% if news_filter_state.survey_filter_mode == 'ai' %}selected{% endif %}>AI 理解筛选</option>
+                  </select>
+                </div>
+                <div>
+                  <label>召回增强</label>
+                  <input type="hidden" name="recall_mode" value="strict">
+                  <label class="check">
+                    <input type="checkbox" name="recall_mode" value="balanced" {% if news_form_state.recall_mode != 'strict' %}checked{% endif %}>
+                    扩大检索覆盖，并保留中等置信度相关新闻
+                  </label>
+                  <div class="hint">关闭后使用 strict 模式，新闻数量可能更少但筛选更保守。</div>
+                </div>
+              </div>
+              <div class="stack" id="news-survey-prompt-fields">
+                <details>
+                  <summary class="mini-btn" style="display:inline-flex;list-style:none;cursor:pointer;">查看和修改 AI 提示词</summary>
+                  <div class="field-block" style="margin-top:12px;">
+                    <label>AI 系统提示词</label>
+                    <div class="pill" id="news-survey-system-prompt-source">{{ news_filter_state.survey_system_prompt_source_label }}</div>
+                    <textarea
+                      name="survey_system_prompt"
+                      id="news-survey-system-prompt"
+                      style="min-height:220px;"
+                    >{{ news_filter_state.survey_system_prompt }}</textarea>
+                    <textarea id="news-survey-system-prompt-default" class="hidden" aria-hidden="true">{{ default_survey_ai_system_prompt }}</textarea>
+                    <div class="inline-actions">
+                      <button type="button" class="mini-btn save-action" id="news-survey-system-prompt-ai-optimize">AI 优化提示词</button>
+                      <button type="button" class="mini-btn save-action" id="news-survey-system-prompt-save">保存提示词</button>
+                      <button type="button" class="mini-btn" id="news-survey-system-prompt-previous">恢复上一次</button>
+                      <button type="button" class="mini-btn" id="news-survey-system-prompt-reset">恢复系统默认</button>
+                    </div>
+                    <div class="api-test-feedback" id="news-survey-system-prompt-feedback" aria-live="polite"></div>
+                    <div class="hint">这里修改的是 AI 理解筛选时发送给接口的系统提示词。保存后会在下次抓取时直接生效。</div>
+                  </div>
+                </details>
+              </div>
+              <div class="hint">选择“AI 理解筛选”后，系统会逐条判断新闻是否真的会影响问卷指标回答；不启用时继续使用当前关键词匹配逻辑。</div>
+            </div>
+          </div>
+          <div class="actions"><button class="btn js-mouse-submit" type="button">开始抓取</button></div>
+        </form>
+      </div>
+
+      <div class="section" id="article-section">
+        <div class="section-head">
+          <h3>2）新闻查看</h3>
+          <span class="badge">可点击原文链接</span>
+        </div>
+        <form method="get" action="{{ url_for('developer') }}" id="article-browser-form">
+          <input type="hidden" name="tab" value="articles">
+          <input type="hidden" name="country_code" value="{{ selected_country_code }}">
+          <div class="article-toolbar">
+            <div class="field-block">
+              <label>数据文件</label>
+              <select name="article_source" id="article-source-select">
+                {% for source in article_browser_state.sources %}
+                <option value="{{ source.value }}" {% if source.value == article_browser_state.selected_source %}selected{% endif %}>{{ source.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field-block">
+              <label>平台</label>
+              <select name="article_platform" id="article-platform-select">
+                <option value="">全部平台</option>
+                {% for platform in article_browser_state.available_platform_options %}
+                <option value="{{ platform.value }}" {% if platform.value == article_browser_state.selected_platform %}selected{% endif %}>{{ platform.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field-block">
+              <label>关键词</label>
+              <input name="article_keyword" id="article-keyword-input" value="{{ article_browser_state.keyword }}" placeholder="标题、摘要、来源名">
+            </div>
+            <div class="field-block">
+              <label>显示条数</label>
+              <select name="article_limit">
+                {% for size in [10, 20, 50, 100] %}
+                <option value="{{ size }}" {% if size == article_browser_state.limit %}selected{% endif %}>{{ size }}</option>
+                {% endfor %}
+                <option value="all" {% if article_browser_state.limit == 'all' %}selected{% endif %}>all</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" type="button" id="article-source-refresh">刷新数据文件</button>
+            <button class="btn primary" type="button" id="article-briefing-table-generate">生成资讯表</button>
+            <span class="briefing-timer" id="article-briefing-table-timer" aria-live="polite"></span>
+            <button class="btn primary" type="button" id="article-news-summary-generate">生成新闻总结</button>
+            <span class="briefing-timer" id="article-news-summary-timer" aria-live="polite"></span>
+          </div>
+          <div class="article-action-feedback" id="article-action-feedback" aria-live="polite"></div>
+          <div class="article-summary-panel hidden" id="article-news-summary-panel">
+            <div class="inline-actions">
+              <button class="mini-btn" type="button" id="article-news-summary-copy">复制全文</button>
+              <button class="mini-btn save-action" type="button" id="article-news-summary-download">下载 TXT</button>
+              <span class="hint" id="article-news-summary-meta"></span>
+            </div>
+            <textarea id="article-news-summary-text" rows="12" readonly placeholder="生成后的新闻总结会显示在这里，便于复制到客户汇报中。"></textarea>
+          </div>
+          <div id="article-results-anchor"></div>
+          <div class="hint">当前数据文件</div>
+          <div class="mono-path">{{ article_browser_state.resolved_path }}</div>
+          <div class="hint">当前文件共 {{ article_browser_state.file_total_rows }} 条，已标星 {{ article_browser_state.file_starred_rows }} 条，当前筛选命中 {{ article_browser_state.matching_rows }} 条，当前展示 {{ article_browser_state.total_rows }} 条。标题和下方链接都可以直接点击进入。</div>
+          <div class="article-star-filter-row">
+            <div class="article-star-filter-controls">
+              <label for="article-starred-filter">🌟 筛选</label>
+              <select name="article_starred_only" id="article-starred-filter">
+                <option value="" {% if not article_browser_state.star_filter %}selected{% endif %}>全部新闻</option>
+                <option value="starred" {% if article_browser_state.star_filter == 'starred' %}selected{% endif %}>仅看🌟</option>
+                <option value="unstarred" {% if article_browser_state.star_filter == 'unstarred' %}selected{% endif %}>仅看未🌟</option>
+              </select>
+              <a
+                class="mini-btn"
+                href="{{ url_for('api_export_article_stars', country_code=selected_country_code, article_source=article_browser_state.selected_source, article_platform=article_browser_state.selected_platform, article_keyword=article_browser_state.keyword) }}"
+              >导出🌟新闻</a>
+            </div>
+          </div>
+        </form>
+        <details class="section" id="manual-article-panel">
+          <summary>手动添加新闻到当前抓取库</summary>
+          <div class="hint">仅支持 SQLite 的 after 数据源；保存后会进入新闻查看和资讯表，不会改写历史 CSV/JSON。</div>
+          <form id="manual-article-form">
+            <input type="hidden" name="manual_article_id" id="manual-article-id">
+            <div class="grid-3">
+              <label>平台/品牌<input name="platform_label" id="manual-article-platform" placeholder="例如 Amazon / SHEIN" required></label>
+              <label>发布时间<input name="published_at" id="manual-article-published" placeholder="YYYY-MM-DD" required></label>
+              <label>情绪
+                <select name="briefing_sentiment" id="manual-article-sentiment">
+                  <option value="Neutral">Neutral</option>
+                  <option value="Positive">Positive</option>
+                  <option value="Negative">Negative</option>
+                </select>
+              </label>
+            </div>
+            <div class="grid-2">
+              <label>原始标题<input name="title" id="manual-article-title" placeholder="原文标题或英文/当地语言标题"></label>
+              <label>中文标题<input name="title_translated" id="manual-article-title-zh" placeholder="可选"></label>
+            </div>
+            <div class="grid-2">
+              <label>新闻 URL<input name="article_url" id="manual-article-url" placeholder="https://..."></label>
+              <label>来源名称<input name="source_name" id="manual-article-source-name" placeholder="例如 Il Sole 24 ORE"></label>
+            </div>
+            <label>摘要<textarea name="summary" id="manual-article-summary" rows="2" placeholder="可选，生成资讯表时会作为 AI 判断上下文"></textarea></label>
+            <div class="grid-2">
+              <label>指标映射<input name="survey_dimensions" id="manual-article-dimensions" placeholder="例如 Price | Features"></label>
+              <label>题号<input name="survey_question_ids" id="manual-article-question-ids" placeholder="例如 B3_1 | B5_18"></label>
+            </div>
+            <label>关联说明<textarea name="survey_indicator_examples" id="manual-article-examples" rows="2" placeholder="可选，已知关联说明可直接填写"></textarea></label>
+            <div class="grid-3">
+              <label><input type="checkbox" name="industry_trend_flag" id="manual-article-industry-flag"> 行业趋势</label>
+              <label>趋势类别<input name="industry_trend_category" id="manual-article-industry-category" placeholder="可选"></label>
+              <label>趋势影响
+                <select name="industry_trend_impact" id="manual-article-industry-impact">
+                  <option value="">未填写</option>
+                  <option value="Positive">Positive</option>
+                  <option value="Negative">Negative</option>
+                  <option value="Mixed">Mixed</option>
+                  <option value="Neutral">Neutral</option>
+                </select>
+              </label>
+            </div>
+            <label>行业趋势说明<textarea name="industry_trend_reason" id="manual-article-industry-reason" rows="2" placeholder="可选"></textarea></label>
+            <div class="actions">
+              <button class="btn" type="button" id="manual-article-ai-fill">AI 自动填写</button>
+              <button class="btn primary" type="submit" id="manual-article-save">保存手动新闻</button>
+              <button class="btn" type="button" id="manual-article-reset">清空</button>
+            </div>
+          </form>
+        </details>
+        <div class="section">
+          {% if article_browser_state.file_exists and article_browser_state.rows %}
+          <div class="article-list">
+            {% for article in article_browser_state.rows %}
+            <article class="article-card{% if article.starred %} is-starred{% endif %}" data-article-card-id="{{ article.article_id }}">
+              <button
+                type="button"
+                class="article-star-btn js-article-star-toggle{% if article.starred %} is-starred{% endif %}"
+                data-article-id="{{ article.article_id }}"
+                data-starred="{{ '1' if article.starred else '0' }}"
+                data-title="{{ article.title_original or article.title or '未命名新闻' }}"
+                data-article-url="{{ article.article_url }}"
+              >🌟</button>
+              <div class="article-meta">
+                {% if article.starred %}<span class="article-chip starred">🌟</span>{% endif %}
+                {% if article.platform_label %}<span class="article-chip">{{ article.platform_label_display or article.platform_label }}</span>{% endif %}
+                {% if article.source_name %}<span class="article-chip">{{ article.source_name }}</span>{% endif %}
+                {% if article.category %}<span class="article-chip">{{ article.category }}</span>{% endif %}
+                {% if article.published_at %}<span class="article-chip">{{ article.published_at_display or article.published_at }}</span>{% endif %}
+                {% if article.briefing_sentiment %}<span class="article-chip sentiment-{{ article.briefing_sentiment|lower }}">{{ article.briefing_sentiment }}</span>{% endif %}
+                {% if article.manual_added %}<span class="article-chip">手动添加</span>{% endif %}
+                {% if article.industry_trend_flag %}<span class="article-chip">行业趋势{% if article.industry_trend_impact %} · {{ article.industry_trend_impact }}{% endif %}</span>{% endif %}
+                {% if article.survey_filter_confidence %}<span class="article-chip">AI置信度 {{ article.survey_filter_confidence }}</span>{% endif %}
+                {% if article.volume_fill %}<span class="article-chip">低量补充</span>{% endif %}
+              </div>
+              <h4 class="article-title">
+                {% if article.article_url %}
+                <a href="{{ article.article_url }}" target="_blank" rel="noopener noreferrer">{{ article.title_original or article.title or '未命名新闻' }}</a>
+                {% else %}
+                {{ article.title_original or article.title or '未命名新闻' }}
+                {% endif %}
+              </h4>
+              {% if article.title_display_zh %}
+              <p class="article-summary">{{ article.title_display_zh }}</p>
+              {% endif %}
+              {% if article.survey_dimensions %}
+              <p class="article-summary">指标映射：{{ article.survey_dimensions }}</p>
+              {% endif %}
+              {% if article.survey_indicator_examples %}
+              <p class="article-summary">关联说明：{{ article.survey_indicator_examples }}</p>
+              {% endif %}
+              <div class="article-links">
+                {% if article.article_url %}
+                <a href="{{ article.article_url }}" target="_blank" rel="noopener noreferrer">打开原文</a>
+                {% endif %}
+                {% if article.source_url %}
+                <a href="{{ article.source_url }}" target="_blank" rel="noopener noreferrer">打开来源页</a>
+                {% endif %}
+                {% if article.manual_added and article.manual_article_id %}
+                <button type="button" class="mini-btn js-manual-article-edit"
+                  data-manual-article-id="{{ article.manual_article_id }}"
+                  data-platform-label="{{ article.platform_label }}"
+                  data-title="{{ article.title_original or article.title }}"
+                  data-title-translated="{{ article.title_display_zh }}"
+                  data-article-url="{{ article.article_url }}"
+                  data-source-name="{{ article.source_name }}"
+                  data-published-at="{{ article.published_at }}"
+                  data-summary="{{ article.summary }}"
+                  data-survey-dimensions="{{ article.survey_dimensions }}"
+                  data-survey-question-ids="{{ article.survey_question_ids }}"
+                  data-survey-indicator-examples="{{ article.survey_indicator_examples }}"
+                  data-briefing-sentiment="{{ article.briefing_sentiment }}"
+                  data-industry-trend-flag="{{ '1' if article.industry_trend_flag else '0' }}"
+                  data-industry-trend-category="{{ article.industry_trend_category }}"
+                  data-industry-trend-impact="{{ article.industry_trend_impact }}"
+                  data-industry-trend-reason="{{ article.industry_trend_reason }}"
+                >编辑</button>
+                <button type="button" class="mini-btn js-manual-article-disable" data-manual-article-id="{{ article.manual_article_id }}">移除</button>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+          {% elif article_browser_state.file_exists %}
+          <div class="article-empty">当前筛选条件下没有匹配到新闻记录，可以换一个平台、关键词或数据文件继续查看。</div>
+          {% else %}
+          <div class="article-empty">还没有找到可用的新闻 CSV 文件。你放在根目录的 <code>articles.csv</code> 会被优先读取。</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <details class="section collapsible-section" id="country-section" {% if active_tab == 'countries' %}open{% endif %}>
+        <summary class="collapsible-summary">
+          <span class="collapsible-title">
+            <strong>3）国家管理</strong>
+            <span>低频配置入口，展开后可新增或删除国家。</span>
+          </span>
+          <span class="badge">点击展开</span>
+        </summary>
+        <div class="collapsible-body">
+        <form method="post" action="/api/countries" id="country-create-form">
+          <div class="section" style="margin-top:0;padding-top:0;border-top:none;">
+            <div class="section-head">
+              <h3>AI 自动填写</h3>
+              <span class="badge">先生成再保存</span>
+            </div>
+            <div class="inline-actions">
+              <button type="button" class="mini-btn" id="country-ai-fill">AI 自动填写</button>
+              <span class="hint">复用页面顶部的 AI API 配置；请先在「新闻抓取」最上方填写 URL、Key 和模型。</span>
+            </div>
+            <details>
+              <summary class="mini-btn" style="display:inline-flex;list-style:none;cursor:pointer;">查看和修改 AI 自动填写提示词</summary>
+              <div class="field-block" style="margin-top:12px;">
+                <label>AI 自动填写提示词</label>
+                <textarea name="country_ai_prompt" id="country-ai-prompt" style="min-height:220px;">{{ country_ai_prompt }}</textarea>
+                <div class="inline-actions">
+                  <button type="button" class="mini-btn save-action" id="country-ai-prompt-save">保存提示词</button>
+                  <button type="button" class="mini-btn" id="country-ai-prompt-reset">恢复默认</button>
+                </div>
+                <div class="api-test-feedback" id="country-ai-prompt-feedback" aria-live="polite"></div>
+                <div class="hint">这里会作为 system prompt 发送给 AI。留空时使用系统默认提示词。</div>
+              </div>
+            </details>
+            <div class="hint">先在下面填一个国家显示名，例如“德国”，再点 AI 自动填写。AI 只帮你填表，不会直接保存。</div>
+          </div>
+          <div class="row-3">
+            <div>
+              <label>国家代码</label>
+              <input name="country_code" placeholder="germany" autocomplete="off">
+              <div class="hint">仅用于文件名和 URL 参数，建议小写英文。</div>
+            </div>
+            <div>
+              <label>国家显示名</label>
+              <input name="country_label" placeholder="德国" autocomplete="off">
+            </div>
+            <div>
+              <label>时区</label>
+              <input name="timezone" placeholder="Europe/Berlin" autocomplete="off">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>消费者标签</label>
+              <input name="consumer_label" placeholder="德国消费者" autocomplete="off">
+            </div>
+            <div>
+              <label>市场标签</label>
+              <input name="market_label" placeholder="德国市场" autocomplete="off">
+            </div>
+          </div>
+          <div class="row-4">
+            <div>
+              <label>Google hl</label>
+              <input name="google_news_hl" placeholder="de" autocomplete="off">
+            </div>
+            <div>
+              <label>Google gl</label>
+              <input name="google_news_gl" placeholder="DE" autocomplete="off">
+            </div>
+            <div>
+              <label>Google ceid</label>
+              <input name="google_news_ceid" placeholder="DE:de" autocomplete="off">
+            </div>
+            <div>
+              <label>Bing 市场</label>
+              <input name="bing_news_market" placeholder="de-DE" autocomplete="off">
+            </div>
+          </div>
+          <input type="hidden" name="market_terms" value="">
+          <input type="hidden" name="market_search_block" value="">
+          <div class="row">
+            <div>
+              <label>默认品牌列表</label>
+              <textarea name="platform_labels" placeholder="Amazon&#10;TikTok Shop&#10;Zalando&#10;SHEIN&#10;Temu"></textarea>
+            </div>
+            <div>
+              <label>品牌搜索别名</label>
+              <textarea name="platform_aliases" placeholder="Amazon | Amazon Germany | Amazon DE | Amazon.de&#10;Zalando | Zalando Germany | Zalando Deutschland | Zalando DE"></textarea>
+              <div class="hint">每行格式：品牌 | 别名 1 | 别名 2。AI 自动填写会生成，保存国家时会一起写入。</div>
+            </div>
+          </div>
+          <div>
+            <label>官方来源</label>
+            <textarea name="official_sources" placeholder="Amazon | About Amazon Germany | https://www.aboutamazon.de/news&#10;TikTok/TikTok Shop | TikTok Newsroom Germany | https://newsroom.tiktok.com/de-de"></textarea>
+            <div class="hint">每行格式：品牌 | 显示名 | URL。</div>
+          </div>
+          <input type="hidden" name="xlsx_path" id="country-xlsx-path-hidden" value="">
+          <input type="hidden" name="output_slug" id="country-output-slug-hidden" value="">
+          <input type="hidden" name="include_xlsx_sources" id="country-include-xlsx-hidden" value="">
+          <details>
+            <summary class="mini-btn" style="display:inline-flex;list-style:none;cursor:pointer;">查看 AI 生成的检索关键词</summary>
+            <div class="row" style="margin-top:12px;">
+              <div>
+                <label>促销/相关新闻关键词</label>
+                <textarea name="promo_search_keywords" placeholder="AI 自动填写后会出现在这里"></textarea>
+              </div>
+              <div>
+                <label>数据/报告关键词</label>
+                <textarea name="report_search_keywords" placeholder="AI 自动填写后会出现在这里"></textarea>
+              </div>
+            </div>
+          </details>
+          <div class="hint">系统会自动生成并维护表格文件与输出前缀，新国家默认不读取表格内来源。</div>
+          <div class="actions">
+            <button class="btn" type="submit" id="country-create-submit">新增国家</button>
+          </div>
+          <div class="api-test-feedback" id="country-create-feedback" aria-live="polite"></div>
+        </form>
+        <div class="section">
+          <div class="section-head">
+            <h3>删除国家</h3>
+            <span class="badge">仅自定义国家</span>
+          </div>
+          <div class="row">
+            <div>
+              <label>选择国家</label>
+              <select id="country-delete-code" {% if not custom_country_options %}disabled{% endif %}>
+                {% if custom_country_options %}
+                {% for country_value, country_label in custom_country_options %}
+                <option value="{{ country_value }}" {% if country_value == selected_country_code %}selected{% endif %}>{{ country_label }}（{{ country_value }}）</option>
+                {% endfor %}
+                {% else %}
+                <option value="">暂无可删除国家</option>
+                {% endif %}
+              </select>
+              <div class="hint">删除会移除该国家配置和对应自动生成文件，内置国家不受影响。</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="mini-btn" id="country-delete-submit" {% if not custom_country_options %}disabled{% endif %}>删除国家</button>
+          </div>
+          <div class="api-test-feedback" id="country-delete-feedback" aria-live="polite"></div>
+        </div>
+        </div>
+      </details>
+
+      <details class="section collapsible-section" id="source-section" {% if active_tab == 'sources' %}open{% endif %}>
+        <summary class="collapsible-summary">
+          <span class="collapsible-title">
+            <strong>4）来源管理</strong>
+            <span>低频维护入口，展开后可查看、新增、停用或重新启用来源。</span>
+          </span>
+          <span class="badge">点击展开</span>
+        </summary>
+        <div class="collapsible-body">
+        <form method="post" action="/run/source-manager" class="js-manual-submit-form" data-async-url="/api/run/source-manager" data-job-target="sources">
+          <input type="hidden" name="country_code" value="{{ selected_country_code }}">
+          <div class="row-3">
+            <div>
+              <label>国家</label>
+              <input value="{{ selected_country_label }}" disabled>
+            </div>
+            <div>
+              <label>操作</label>
+              <select name="source_action" id="source-action">
+                <option value="list" {% if source_state.source_action == 'list' %}selected{% endif %}>查看列表</option>
+                <option value="add" {% if source_state.source_action == 'add' %}selected{% endif %}>新增来源</option>
+                <option value="reactivate" {% if source_state.source_action == 'reactivate' %}selected{% endif %}>重新启用来源</option>
+                <option value="remove" {% if source_state.source_action == 'remove' %}selected{% endif %}>停用来源</option>
+              </select>
+            </div>
+            <div class="field-block" id="sm-platform-text-wrap">
+              <label>平台名</label>
+              <input name="sm_platform_text" value="{{ source_state.sm_platform_text }}" placeholder="例如 TikTok Shop">
+              <div class="hint" id="sm-platform-text-hint">media 来源可不填；buyer/seller 来源仍需指定平台。</div>
+            </div>
+            <div class="field-block hidden" id="sm-platform-select-wrap">
+              <label>平台名</label>
+              <select name="sm_platform_select" id="sm-platform-select"></select>
+            </div>
+            <div>
+              <label>侧别</label>
+              <select name="sm_side" id="sm-side">
+                <option value="" {% if not source_state.sm_side %}selected{% endif %}>全部</option>
+                <option value="media" {% if source_state.sm_side == 'media' %}selected{% endif %}>media</option>
+                <option value="buyer" {% if source_state.sm_side == 'buyer' %}selected{% endif %}>buyer</option>
+                <option value="seller" {% if source_state.sm_side == 'seller' %}selected{% endif %}>seller</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field-block" id="sm-url-text-wrap">
+              <label>网址</label>
+              <input name="sm_url_text" value="{{ source_state.sm_url_text }}" placeholder="https://example.com/">
+            </div>
+            <div class="field-block hidden" id="sm-url-select-wrap">
+              <label>网址</label>
+              <select name="sm_url_select" id="sm-url-select"></select>
+            </div>
+          </div>
+          <div class="row-3 hidden" id="sm-api-fields">
+            <div><label>API URL</label><input name="api_url" value="{{ source_state.api_url }}"></div>
+            <div>
+              <label>API Key</label>
+              <input type="password" name="api_key" id="source-api-key" value="{{ source_state.api_key }}">
+              <div class="inline-actions">
+                <label class="check">
+                  <input type="checkbox" class="js-toggle-password" data-target="source-api-key">
+                  显示实际内容
+                </label>
+              </div>
+            </div>
+            <div><label>API Model</label><input name="api_model" value="{{ source_state.api_model }}"></div>
+            <div class="hint" style="grid-column:1 / -1;">默认带入上方 AI 配置；在这里修改只影响来源管理，不会影响新闻抓取。</div>
+          </div>
+          <div class="checklist hidden" id="sm-list-options">
+            <label class="check"><input type="checkbox" name="show_inactive" value="1" {% if source_state.show_inactive %}checked{% endif %}> 显示已停用记录</label>
+          </div>
+          <div class="checklist hidden" id="sm-add-options">
+            <label class="check"><input type="checkbox" name="skip_api" value="1" {% if source_state.skip_api %}checked{% endif %}> 跳过 API 适配器生成</label>
+            <label class="check"><input type="checkbox" name="force_api" value="1" {% if source_state.force_api %}checked{% endif %}> 强制重新生成适配器</label>
+          </div>
+          <div class="actions"><button class="btn js-mouse-submit" type="button" id="source-action-submit-label">执行来源管理</button></div>
+          <div class="source-list-feedback" id="source-list-feedback"></div>
+        </form>
+
+        <div class="section">
+          <div class="section-head">
+            <h3>查看列表</h3>
+            <span class="badge">默认聚焦媒体侧 · 显示上次评估结果</span>
+          </div>
+          <div class="inline-actions">
+            <button type="button" class="mini-btn" id="source-record-toggle" aria-expanded="false" aria-controls="source-record-panel">展开查看列表</button>
+          </div>
+          <div id="source-record-panel" class="hidden">
+            <div class="source-filter-toolbar">
+              <div class="field-block">
+                <label>品牌筛选</label>
+                <select id="source-risk-platform-filter"></select>
+              </div>
+              <div class="field-block">
+                <label>侧别筛选</label>
+                <select id="source-risk-side-filter"></select>
+              </div>
+            </div>
+            <div id="source-record-card-list" class="source-card-list">
+              {% if source_record_cards %}
+                {% for record in source_record_cards %}
+                <article class="source-card">
+                  <div class="source-card-head">
+                    <div>
+                      <h4 class="source-card-title">{{ (record.platform_display or record.platform) if record.side == 'media' else ((record.platform_display or record.platform) ~ ' · ' ~ record.side) }}</h4>
+                      <div class="source-card-url">{{ record.source_url }}</div>
+                    </div>
+                  </div>
+                  <div class="source-card-meta">
+                    <span class="source-tag {{ 'status-active' if record.active else 'status-inactive' }}">{{ '启用中' if record.active else '已停用' }}</span>
+                    <span class="source-tag risk-{{ record.completeness_risk or 'unknown' }}">完整性风险：{{ record.completeness_risk or 'unknown' }}</span>
+                    {% for tag in record.capability_tags or [] %}
+                    <span class="source-tag capability">{{ tag }}</span>
+                    {% endfor %}
+                  </div>
+                  <div class="source-detail-grid">
+                    <div class="source-detail">
+                      <strong>评估说明</strong>
+                      <span>{{ record.completeness_reason or '暂无' }}</span>
+                    </div>
+                    <div class="source-detail">
+                      <strong>上次产出</strong>
+                      <span>
+                        {{ record.last_recent_article_count if record.last_recent_article_count is defined else '暂无' }}
+                        {% if record.last_elapsed_seconds is defined %} / {{ '%.1f'|format(record.last_elapsed_seconds) }}s{% endif %}
+                        {% if record.last_zero_yield_reason %} / {{ record.last_zero_yield_reason }}{% endif %}
+                      </span>
+                    </div>
+                    <div class="source-detail">
+                      <strong>建议操作</strong>
+                      <span>{{ record.last_source_recommendation or '暂无' }}</span>
+                    </div>
+                    <div class="source-detail">
+                      <strong>解析诊断</strong>
+                      <span>
+                        {{ record.last_search_endpoint_status or '暂无' }}
+                        / selector {{ record.last_selector_match_count if record.last_selector_match_count is defined else 0 }}
+                        / date {{ record.last_parsed_date_count if record.last_parsed_date_count is defined else 0 }}
+                      </span>
+                    </div>
+                    <div class="source-detail">
+                      <strong>访问状态</strong>
+                      <span>{{ record.access_status or '未知' }}{% if record.http_status %} · HTTP {{ record.http_status }}{% endif %}</span>
+                    </div>
+                    <div class="source-detail">
+                      <strong>最终网址</strong>
+                      <span>{{ record.final_url or record.source_url }}</span>
+                    </div>
+                    <div class="source-detail">
+                      <strong>发现能力</strong>
+                      <span>
+                        RSS/Atom {{ (record.feed_candidates or [])|length }} 条 ·
+                        搜索入口 {{ (record.searchable_form_count or 0) + ((record.search_links or [])|length) }} 处 ·
+                        API 痕迹 {{ (record.api_candidates or [])|length }} 处
+                      </span>
+                    </div>
+                  </div>
+                </article>
+                {% endfor %}
+              {% else %}
+                <div class="article-empty">当前筛选条件下没有来源记录。</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        </div>
+      </details>
+
+      <div class="section" id="source-result-section">
+        <div class="section-head">
+          <h3>来源管理运行结果</h3>
+          <span class="badge">当前结果</span>
+        </div>
+        <div class="progress-panel hidden" id="source-progress-panel">
+          <div class="progress-head">
+            <div>
+              <div class="progress-title">来源管理正在运行</div>
+              <div class="progress-stage" id="source-progress-stage">正在初始化任务…</div>
+              <div class="progress-current" id="source-current-site">当前状态：来源管理任务</div>
+              <div class="progress-current" id="source-last-completed-site">最近完成：暂无</div>
+            </div>
+            <div class="badge" id="source-progress-percent">0%</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="source-progress-fill"></div></div>
+          <div class="progress-stats">
+            <div class="progress-stat"><strong id="source-selected-platforms">0</strong><span>已选平台数</span></div>
+            <div class="progress-stat"><strong id="source-total-sites">0</strong><span>总网站数</span></div>
+            <div class="progress-stat"><strong id="source-completed-sites">0</strong><span>已完成网站</span></div>
+            <div class="progress-stat"><strong id="source-active-sites">0</strong><span>正在抓取</span></div>
+            <div class="progress-stat"><strong id="source-elapsed">0 秒</strong><span>已运行</span></div>
+            <div class="progress-stat"><strong id="source-remaining">0 秒</strong><span>预计剩余</span></div>
+          </div>
+        </div>
+        <div id="source-result-content">
+          {% if active_tab == 'sources' and result %}
+          <div class="pill {{ 'ok' if result.exit_code == 0 else 'bad' }}">退出码：{{ result.exit_code }}</div>
+          <div class="hint">参数：{{ ' '.join(result.argv) }}</div>
+          <div class="result">{{ result.output or '无输出' }}</div>
+          {% else %}
+          <div class="mini-note">来源管理执行后，运行结果会显示在这里。</div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="aside-stack">
+      <div class="card" id="news-result-card">
+        <h2>新闻抓取运行结果</h2>
+        <div class="progress-panel hidden" id="news-progress-panel">
+          <div class="progress-head">
+            <div>
+              <div class="progress-title">新闻抓取正在运行</div>
+              <div class="progress-stage" id="news-progress-stage">正在初始化任务…</div>
+              <div class="progress-current" id="news-current-site">当前状态：准备开始抓取网站</div>
+              <div class="progress-current" id="news-last-completed-site">最近完成：暂无</div>
+            </div>
+            <div class="badge" id="news-progress-percent">0%</div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="news-progress-fill"></div></div>
+          <div class="progress-stats">
+            <div class="progress-stat"><strong id="news-selected-platforms">0</strong><span>已选平台数</span></div>
+            <div class="progress-stat"><strong id="news-total-sites">0</strong><span>总网站数</span></div>
+            <div class="progress-stat"><strong id="news-completed-sites">0</strong><span>已完成网站</span></div>
+            <div class="progress-stat"><strong id="news-active-sites">0</strong><span>正在抓取</span></div>
+            <div class="progress-stat"><strong id="news-elapsed">0 秒</strong><span>已运行</span></div>
+            <div class="progress-stat"><strong id="news-remaining">0 秒</strong><span>预计剩余</span></div>
+          </div>
+        </div>
+        <div id="news-result-content">
+          {% if result and active_tab != 'sources' %}
+            <div class="pill {{ 'ok' if result.exit_code == 0 else 'bad' }}">退出码：{{ result.exit_code }}</div>
+            <div class="hint">参数：{{ ' '.join(result.argv) }}</div>
+            <div class="result">{{ result.output or '无输出' }}</div>
+          {% else %}
+            <div class="mini-note">提交任一表单后，这里会显示脚本输出日志，方便快速判断参数、退出码和异常信息。</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>最近输出目录</h2>
+        {% if recent_outputs %}
+          {% for item in recent_outputs %}
+          <div class="dir">
+            <strong>{{ item.name }}</strong>
+            <ul>
+              {% for file in item.files[:8] %}
+              <li>{{ file }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="muted">还没有检测到 outputs 目录。</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h2>启动方式</h2>
+        <div class="result">python3 -m pip install -r requirements.txt
+python3 web_app.py
+
+默认访问：
+http://127.0.0.1:8000</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+  let sourceManagerRecords = {{ source_records|tojson }};
+  const sourceManagerKnownPlatforms = {{ source_manager_known_platforms|tojson }};
+  const sourceManagerPlatformDisplayLabels = {{ source_manager_platform_display_labels|tojson }};
+  const sourceManagerState = {{ source_state|tojson }};
+  const CURRENT_COUNTRY_CODE = {{ selected_country_code|tojson }};
+  const activeJobControllers = {};
+  const ACTIVE_JOB_STORAGE_KEY = 'web-console-active-jobs';
+  const ARTICLE_BROWSER_SCROLL_STATE_KEY = 'article-browser-scroll-state';
+  function loadStoredJobs() {
+    try {
+      const raw = window.sessionStorage.getItem(ACTIVE_JOB_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function saveStoredJobs(jobs) {
+    try {
+      window.sessionStorage.setItem(ACTIVE_JOB_STORAGE_KEY, JSON.stringify(jobs));
+    } catch (error) {
+      // Ignore storage failures in local browser sessions.
+    }
+  }
+
+  function rememberActiveJob(target, jobId) {
+    const jobs = loadStoredJobs();
+    jobs[target] = jobId;
+    saveStoredJobs(jobs);
+  }
+
+  function forgetActiveJob(target) {
+    const jobs = loadStoredJobs();
+    delete jobs[target];
+    saveStoredJobs(jobs);
+  }
+
+  function saveArticleBrowserScrollState() {
+    try {
+      window.sessionStorage.setItem(
+        ARTICLE_BROWSER_SCROLL_STATE_KEY,
+        JSON.stringify({
+          preserve: true,
+          scrollY: window.scrollY || window.pageYOffset || 0,
+        })
+      );
+    } catch (error) {
+      // Ignore storage failures in local browser sessions.
+    }
+  }
+
+  function readArticleBrowserScrollState() {
+    try {
+      const raw = window.sessionStorage.getItem(ARTICLE_BROWSER_SCROLL_STATE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && typeof parsed === 'object' ? parsed : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function clearArticleBrowserScrollState() {
+    try {
+      window.sessionStorage.removeItem(ARTICLE_BROWSER_SCROLL_STATE_KEY);
+    } catch (error) {
+      // Ignore storage failures in local browser sessions.
+    }
+  }
+
+  function findSubmitButton(target) {
+    return document.querySelector(`.js-manual-submit-form[data-job-target="${target}"] .js-mouse-submit`);
+  }
+
+  function sourceManagerPlatformLabel(record) {
+    return String(record.platform_filter_label || record.platform_selector_label || record.platform || '').trim();
+  }
+
+  function displaySourceManagerPlatformLabel(label) {
+    const raw = String(label || '').trim();
+    return sourceManagerPlatformDisplayLabels[raw] || raw;
+  }
+
+  function buildSourceManagerPlatformOptions(records) {
+    const normalizedRecords = Array.isArray(records) ? records : [];
+    const optionMap = new Map();
+    normalizedRecords.forEach((record) => {
+      const value = String(record.platform || '').trim();
+      const label = sourceManagerPlatformLabel(record);
+      if (value && label && !optionMap.has(value)) {
+        optionMap.set(value, label);
+      }
+    });
+
+    const options = [];
+    const usedValues = new Set();
+    sourceManagerKnownPlatforms.forEach((knownPlatform) => {
+      optionMap.forEach((label, value) => {
+        if (label === knownPlatform && !usedValues.has(value)) {
+          options.push({ value, label: displaySourceManagerPlatformLabel(label) });
+          usedValues.add(value);
+        }
+      });
+    });
+
+    return options;
+  }
+
+  (function () {
+    const tabButtons = Array.from(document.querySelectorAll('.js-top-tab'));
+    const sectionIds = ['dashboard-top', 'news-section', 'article-section', 'country-section', 'source-section'];
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((node) => node instanceof HTMLElement);
+
+    if (!tabButtons.length || !sections.length) {
+      return;
+    }
+
+    function setActiveTabByTarget(targetId) {
+      tabButtons.forEach((button) => {
+        button.classList.toggle('active', button.getAttribute('data-scroll-target') === targetId);
+      });
+    }
+
+    function pickVisibleSection() {
+      const viewportAnchor = window.innerHeight * 0.22;
+      let currentSection = sections[0];
+
+      sections.forEach((section) => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= viewportAnchor) {
+          currentSection = section;
+        }
+      });
+
+      return currentSection;
+    }
+
+    function syncActiveTabToScroll() {
+      const currentSection = pickVisibleSection();
+      if (currentSection?.id) {
+        setActiveTabByTarget(currentSection.id);
+      }
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-scroll-target');
+        if (!targetId) {
+          return;
+        }
+        setActiveTabByTarget(targetId);
+        const target = document.getElementById(targetId);
+        if (target) {
+          if (target instanceof HTMLDetailsElement) {
+            target.open = true;
+          }
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    let ticking = false;
+    const requestSync = () => {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        syncActiveTabToScroll();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', requestSync, { passive: true });
+    window.addEventListener('resize', requestSync);
+    requestSync();
+  })();
+
+  (function () {
+    const form = document.getElementById('country-create-form');
+    const submitButton = document.getElementById('country-create-submit');
+    const aiFillButton = document.getElementById('country-ai-fill');
+    const feedback = document.getElementById('country-create-feedback');
+    const aiPromptTextarea = document.getElementById('country-ai-prompt');
+    const aiPromptSaveButton = document.getElementById('country-ai-prompt-save');
+    const aiPromptResetButton = document.getElementById('country-ai-prompt-reset');
+    const aiPromptFeedback = document.getElementById('country-ai-prompt-feedback');
+    const xlsxPathHiddenInput = document.getElementById('country-xlsx-path-hidden');
+    const outputSlugHiddenInput = document.getElementById('country-output-slug-hidden');
+    const includeXlsxHiddenInput = document.getElementById('country-include-xlsx-hidden');
+    const countryCodeField = form instanceof HTMLFormElement ? form.elements.namedItem('country_code') : null;
+    if (!(form instanceof HTMLFormElement) || !(submitButton instanceof HTMLButtonElement) || !(feedback instanceof HTMLElement)) {
+      return;
+    }
+
+    function normalizeCountryCodeValue(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^[_-]+|[_-]+$/g, '');
+    }
+
+    function syncHiddenCountryDefaults() {
+      const normalizedCode = normalizeCountryCodeValue(countryCodeField instanceof HTMLInputElement ? countryCodeField.value : '');
+      if (xlsxPathHiddenInput instanceof HTMLInputElement) {
+        xlsxPathHiddenInput.value = normalizedCode ? `country_data/${normalizedCode}/source_survey.xlsx` : '';
+      }
+      if (outputSlugHiddenInput instanceof HTMLInputElement) {
+        outputSlugHiddenInput.value = normalizedCode;
+      }
+      if (includeXlsxHiddenInput instanceof HTMLInputElement) {
+        includeXlsxHiddenInput.value = '';
+      }
+    }
+
+    function setFormFieldIfBlank(name, value) {
+      const field = form.elements.namedItem(name);
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) {
+        if (field.value.trim()) {
+          return false;
+        }
+        field.value = String(value ?? '');
+        return Boolean(field.value.trim());
+      }
+      return false;
+    }
+
+    function appendTopSurveyApiSettings(formData) {
+      const apiUrlInput = document.getElementById('news-survey-api-url');
+      const apiKeyInput = document.getElementById('news-survey-api-key');
+      const apiModelInput = document.getElementById('news-survey-api-model');
+      if (apiUrlInput instanceof HTMLInputElement && apiUrlInput.value.trim()) {
+        formData.set('survey_api_url', apiUrlInput.value.trim());
+      }
+      if (apiKeyInput instanceof HTMLInputElement && apiKeyInput.value.trim()) {
+        formData.set('survey_api_key', apiKeyInput.value.trim());
+      }
+      if (apiModelInput instanceof HTMLInputElement && apiModelInput.value.trim()) {
+        formData.set('survey_api_model', apiModelInput.value.trim());
+      }
+    }
+
+    if (aiPromptTextarea instanceof HTMLTextAreaElement && aiPromptSaveButton instanceof HTMLButtonElement && aiPromptResetButton instanceof HTMLButtonElement && aiPromptFeedback instanceof HTMLElement) {
+      aiPromptSaveButton.addEventListener('click', async () => {
+        aiPromptSaveButton.disabled = true;
+        aiPromptSaveButton.classList.add('is-pending');
+        aiPromptSaveButton.textContent = '保存中...';
+        aiPromptFeedback.textContent = '正在保存 AI 自动填写提示词...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_ai_prompt', aiPromptTextarea.value);
+          const response = await fetch('/api/countries/ai-prompt', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '保存提示词失败');
+          }
+          aiPromptTextarea.value = payload.country_ai_prompt || '';
+          aiPromptFeedback.textContent = '已保存 AI 自动填写提示词。';
+        } catch (error) {
+          aiPromptFeedback.textContent = error instanceof Error ? error.message : '保存提示词失败';
+        } finally {
+          aiPromptSaveButton.disabled = false;
+          aiPromptSaveButton.classList.remove('is-pending');
+          aiPromptSaveButton.textContent = '保存提示词';
+        }
+      });
+
+      aiPromptResetButton.addEventListener('click', async () => {
+        aiPromptResetButton.disabled = true;
+        aiPromptResetButton.classList.add('is-pending');
+        aiPromptResetButton.textContent = '恢复中...';
+        aiPromptFeedback.textContent = '正在读取默认提示词...';
+
+        try {
+          const response = await fetch('/api/countries/ai-prompt/default', {
+            method: 'POST',
+            body: new FormData(),
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '恢复默认失败');
+          }
+          aiPromptTextarea.value = payload.country_ai_prompt || '';
+          aiPromptFeedback.textContent = '已恢复到默认提示词文本，请点击“保存提示词”后才会真正修改配置。';
+        } catch (error) {
+          aiPromptFeedback.textContent = error instanceof Error ? error.message : '恢复默认失败';
+        } finally {
+          aiPromptResetButton.disabled = false;
+          aiPromptResetButton.classList.remove('is-pending');
+          aiPromptResetButton.textContent = '恢复默认';
+        }
+      });
+    }
+
+    if (aiFillButton instanceof HTMLButtonElement) {
+      aiFillButton.addEventListener('click', async () => {
+        aiFillButton.disabled = true;
+        aiFillButton.classList.add('is-pending');
+        aiFillButton.textContent = 'AI 填写中...';
+        feedback.textContent = '正在调用 AI 补全国家配置...';
+
+        try {
+          const formData = new FormData(form);
+          appendTopSurveyApiSettings(formData);
+          const response = await fetch('/api/countries/suggest', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || 'AI 自动填写失败');
+          }
+          const fields = payload.fields || {};
+          let filledCount = 0;
+          let keptCount = 0;
+          Object.entries(fields).forEach(([name, value]) => {
+            const field = form.elements.namedItem(name);
+            if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) {
+              if (field.value.trim()) {
+                keptCount += 1;
+                return;
+              }
+            }
+          if (setFormFieldIfBlank(name, value)) {
+              filledCount += 1;
+            }
+          });
+          syncHiddenCountryDefaults();
+          feedback.textContent = `AI 已补全 ${filledCount} 个空字段，保留了 ${keptCount} 个你已填写的字段。请快速检查后再点“新增国家”。`;
+        } catch (error) {
+          feedback.textContent = error instanceof Error ? error.message : 'AI 自动填写失败';
+        } finally {
+          aiFillButton.disabled = false;
+          aiFillButton.classList.remove('is-pending');
+          aiFillButton.textContent = 'AI 自动填写';
+        }
+      });
+    }
+
+    if (countryCodeField instanceof HTMLInputElement) {
+      countryCodeField.addEventListener('input', syncHiddenCountryDefaults);
+      countryCodeField.addEventListener('change', syncHiddenCountryDefaults);
+    }
+    syncHiddenCountryDefaults();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      syncHiddenCountryDefaults();
+      submitButton.disabled = true;
+      submitButton.classList.add('is-pending');
+      submitButton.textContent = '正在新增...';
+      feedback.textContent = '正在写入国家配置...';
+
+      try {
+        const response = await fetch('/api/countries', {
+          method: 'POST',
+          body: new FormData(form),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          const errors = Array.isArray(payload.errors) ? payload.errors.join('；') : (payload.error || '新增国家失败');
+          throw new Error(errors);
+        }
+        feedback.textContent = `已新增 ${payload.country_label}，正在切换到该国家...`;
+        window.setTimeout(() => {
+          window.location.href = payload.redirect_url || `/?country_code=${encodeURIComponent(payload.country_code)}&tab=news`;
+        }, 500);
+      } catch (error) {
+        feedback.textContent = error instanceof Error ? error.message : '新增国家失败';
+        submitButton.disabled = false;
+        submitButton.classList.remove('is-pending');
+        submitButton.textContent = '新增国家';
+      }
+    });
+  })();
+
+  (function () {
+    const deleteButton = document.getElementById('country-delete-submit');
+    const deleteSelect = document.getElementById('country-delete-code');
+    const feedback = document.getElementById('country-delete-feedback');
+    if (!(deleteButton instanceof HTMLButtonElement) || !(deleteSelect instanceof HTMLSelectElement) || !(feedback instanceof HTMLElement)) {
+      return;
+    }
+
+    deleteButton.addEventListener('click', async () => {
+      const countryCode = (deleteSelect.value || '').trim();
+      const selectedOption = deleteSelect.selectedOptions && deleteSelect.selectedOptions.length ? deleteSelect.selectedOptions[0] : null;
+      const countryLabel = selectedOption ? selectedOption.textContent || countryCode : countryCode;
+      if (!countryCode) {
+        feedback.textContent = '请先选择要删除的国家。';
+        return;
+      }
+      if (!window.confirm(`确认删除国家：${countryLabel}？`)) {
+        return;
+      }
+
+      deleteButton.disabled = true;
+      deleteButton.classList.add('is-pending');
+      deleteButton.textContent = '删除中...';
+      feedback.textContent = '正在删除国家配置...';
+
+      try {
+        const formData = new FormData();
+        formData.append('country_code', countryCode);
+        const response = await fetch('/api/countries/delete', {
+          method: 'POST',
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || '删除国家失败');
+        }
+        feedback.textContent = '删除成功，正在刷新国家列表...';
+        window.setTimeout(() => {
+          window.location.href = payload.redirect_url || '/?tab=countries';
+        }, 400);
+      } catch (error) {
+        feedback.textContent = error instanceof Error ? error.message : '删除国家失败';
+        deleteButton.disabled = false;
+        deleteButton.classList.remove('is-pending');
+        deleteButton.textContent = '删除国家';
+      }
+    });
+  })();
+
+  (function () {
+    const submitButton = document.getElementById('country-alias-submit');
+    const resetButton = document.getElementById('country-alias-reset');
+    const previousButton = document.getElementById('country-alias-previous');
+    const aiOptimizeButton = document.getElementById('country-alias-ai-optimize');
+    const feedback = document.getElementById('country-alias-feedback');
+    const aliasTextarea = document.getElementById('country-alias-text');
+    const aliasAiSettings = document.getElementById('country-alias-ai-settings');
+    const aliasAiStatus = document.getElementById('country-alias-ai-status');
+    const surveyApiUrlInput = document.getElementById('news-survey-api-url');
+    const surveyApiModelInput = document.getElementById('news-survey-api-model');
+    const surveyApiKeyInput = document.getElementById('news-survey-api-key');
+    const customPlatformsTextarea = document.querySelector('textarea[name="news_custom_platforms"]');
+    const newsForm = document.querySelector('form[data-job-target="news"]');
+    if (!(submitButton instanceof HTMLButtonElement) || !(feedback instanceof HTMLElement) || !(aliasTextarea instanceof HTMLTextAreaElement)) {
+      return;
+    }
+
+    function aliasAiConfigComplete() {
+      return Boolean(
+        surveyApiUrlInput instanceof HTMLInputElement && surveyApiUrlInput.value.trim()
+        && surveyApiModelInput instanceof HTMLInputElement && surveyApiModelInput.value.trim()
+        && surveyApiKeyInput instanceof HTMLInputElement && surveyApiKeyInput.value.trim()
+      );
+    }
+
+    function syncAliasAiStatus() {
+      if (!(aliasAiStatus instanceof HTMLElement)) {
+        return;
+      }
+      const model = surveyApiModelInput instanceof HTMLInputElement ? surveyApiModelInput.value.trim() : '';
+      aliasAiStatus.textContent = aliasAiConfigComplete() ? `AI 配置已填写：${model || '已填写'}` : '设置 AI API';
+    }
+
+    function syncAliasAiToSurvey() {
+      syncAliasAiStatus();
+    }
+
+    function syncSurveyToAliasAi() {
+      syncAliasAiStatus();
+    }
+
+    [surveyApiUrlInput, surveyApiModelInput, surveyApiKeyInput].forEach((input) => {
+      if (input instanceof HTMLInputElement) {
+        input.addEventListener('input', syncSurveyToAliasAi);
+        input.addEventListener('change', syncSurveyToAliasAi);
+      }
+    });
+    syncSurveyToAliasAi();
+
+    submitButton.addEventListener('click', async () => {
+      submitButton.disabled = true;
+      submitButton.classList.add('is-pending');
+      submitButton.textContent = '保存中...';
+      feedback.textContent = '正在保存品牌别名...';
+
+      try {
+        const formData = new FormData();
+        formData.append('country_code', CURRENT_COUNTRY_CODE);
+        formData.append('platform_aliases_text', aliasTextarea.value);
+        const response = await fetch('/api/countries/aliases', {
+          method: 'POST',
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || '保存别名失败');
+        }
+        if (payload.text) {
+          aliasTextarea.value = payload.text;
+        }
+        feedback.textContent = `已保存 ${payload.platform_count || 0} 个品牌的搜索别名。`;
+      } catch (error) {
+        feedback.textContent = error instanceof Error ? error.message : '保存别名失败';
+      } finally {
+        submitButton.disabled = false;
+        submitButton.classList.remove('is-pending');
+        submitButton.textContent = '保存别名';
+      }
+    });
+
+    if (aiOptimizeButton instanceof HTMLButtonElement) {
+      aiOptimizeButton.addEventListener('click', async () => {
+        syncAliasAiToSurvey();
+        if (!aliasAiConfigComplete()) {
+          if (aliasAiSettings instanceof HTMLDetailsElement) {
+            aliasAiSettings.open = true;
+          }
+          feedback.textContent = '请先填写 AI API URL、API Key 和模型名。';
+          return;
+        }
+
+        aiOptimizeButton.disabled = true;
+        aiOptimizeButton.classList.add('is-pending');
+        aiOptimizeButton.textContent = 'AI 优化中...';
+        feedback.textContent = '正在调用 AI 优化品牌搜索别名...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          formData.append('platform_aliases_text', aliasTextarea.value);
+          if (customPlatformsTextarea instanceof HTMLTextAreaElement) {
+            formData.append('news_custom_platforms', customPlatformsTextarea.value);
+          }
+          if (surveyApiUrlInput instanceof HTMLInputElement) {
+            formData.append('alias_ai_api_url', surveyApiUrlInput.value);
+          }
+          if (surveyApiKeyInput instanceof HTMLInputElement) {
+            formData.append('alias_ai_api_key', surveyApiKeyInput.value);
+          }
+          if (surveyApiModelInput instanceof HTMLInputElement) {
+            formData.append('alias_ai_api_model', surveyApiModelInput.value);
+          }
+          if (newsForm instanceof HTMLFormElement) {
+            newsForm.querySelectorAll('input[name="news_builtin_platforms"]:checked').forEach((input) => {
+              if (input instanceof HTMLInputElement) {
+                formData.append('news_builtin_platforms', input.value);
+              }
+            });
+          }
+
+          const response = await fetch('/api/countries/aliases/suggest', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || 'AI 优化别名失败');
+          }
+          if (payload.text) {
+            aliasTextarea.value = payload.text;
+          }
+          feedback.textContent = `已 AI 优化并保存 ${payload.platform_count || 0} 个品牌的搜索别名，下次抓取会直接使用。`;
+        } catch (error) {
+          feedback.textContent = error instanceof Error ? error.message : 'AI 优化别名失败';
+        } finally {
+          aiOptimizeButton.disabled = false;
+          aiOptimizeButton.classList.remove('is-pending');
+          aiOptimizeButton.textContent = 'AI 优化别名';
+          syncAliasAiStatus();
+        }
+      });
+    }
+
+    if (previousButton instanceof HTMLButtonElement) {
+      previousButton.addEventListener('click', async () => {
+        previousButton.disabled = true;
+        previousButton.classList.add('is-pending');
+        previousButton.textContent = '恢复中...';
+        feedback.textContent = '正在读取上一次保存的品牌别名...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          const response = await fetch('/api/countries/aliases/previous', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '暂无上一版可恢复');
+          }
+          if (payload.text) {
+            aliasTextarea.value = payload.text;
+          }
+          feedback.textContent = `已恢复到上一次品牌别名文本，请点击“保存别名”后才会真正修改配置。`;
+        } catch (error) {
+          feedback.textContent = error instanceof Error ? error.message : '恢复上一次失败';
+        } finally {
+          previousButton.disabled = false;
+          previousButton.classList.remove('is-pending');
+          previousButton.textContent = '恢复上一次';
+        }
+      });
+    }
+
+    if (resetButton instanceof HTMLButtonElement) {
+      resetButton.addEventListener('click', async () => {
+        resetButton.disabled = true;
+        resetButton.classList.add('is-pending');
+        resetButton.textContent = '恢复中...';
+        feedback.textContent = '正在恢复系统默认品牌别名...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          const response = await fetch('/api/countries/aliases/default', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '恢复系统默认失败');
+          }
+          if (payload.text) {
+            aliasTextarea.value = payload.text;
+          }
+          feedback.textContent = `已把 ${payload.platform_count || 0} 个品牌恢复到系统默认别名文本，请点击“保存别名”后才会真正修改配置。`;
+        } catch (error) {
+          feedback.textContent = error instanceof Error ? error.message : '恢复系统默认失败';
+        } finally {
+          resetButton.disabled = false;
+          resetButton.classList.remove('is-pending');
+          resetButton.textContent = '恢复系统默认';
+        }
+      });
+    }
+  })();
+
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') !== 'articles') {
+      clearArticleBrowserScrollState();
+      return;
+    }
+
+    const scrollState = readArticleBrowserScrollState();
+    if (scrollState && scrollState.preserve) {
+      clearArticleBrowserScrollState();
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: Number(scrollState.scrollY) || 0, left: 0, behavior: 'auto' });
+      });
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById('article-results-anchor');
+      if (target) {
+        target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    });
+  })();
+
+  (function () {
+    const modeSelect = document.getElementById('news-date-mode');
+    const daysField = document.getElementById('news-days-field');
+    const daysInput = document.getElementById('news-days-input');
+    const rangeFields = document.getElementById('news-range-fields');
+    const startDateInput = document.getElementById('news-start-date');
+    const endDateInput = document.getElementById('news-end-date');
+
+    if (!modeSelect || !daysField || !daysInput || !rangeFields || !startDateInput || !endDateInput) {
+      return;
+    }
+
+    function syncNewsDateMode() {
+      const isRangeMode = modeSelect.value === 'range';
+
+      daysField.classList.toggle('hidden', isRangeMode);
+      rangeFields.classList.toggle('hidden', !isRangeMode);
+
+      daysInput.disabled = isRangeMode;
+      startDateInput.disabled = !isRangeMode;
+      endDateInput.disabled = !isRangeMode;
+    }
+
+    modeSelect.addEventListener('change', syncNewsDateMode);
+    syncNewsDateMode();
+  })();
+
+  (function () {
+    const relatedNewsSearchEnabled = document.getElementById('news-promo-search-enabled');
+    const reportSearchEnabled = document.getElementById('news-report-search-enabled');
+    const promoSearchEngine = document.getElementById('news-promo-search-engine');
+    const promoKeywordFields = document.getElementById('news-promo-keyword-fields');
+    const relatedNewsSearchKeywords = document.getElementById('news-promo-search-keywords');
+    const relatedNewsSearchKeywordsDefault = document.getElementById('news-promo-search-keywords-default');
+    const reportSearchKeywords = document.getElementById('news-report-search-keywords');
+    const reportSearchKeywordsDefault = document.getElementById('news-report-search-keywords-default');
+    const promoSearchKeywordsAiOptimize = document.getElementById('news-promo-search-keywords-ai-optimize');
+    const promoSearchKeywordsSave = document.getElementById('news-promo-search-keywords-save');
+    const promoSearchKeywordsPrevious = document.getElementById('news-promo-search-keywords-previous');
+    const promoSearchKeywordsReset = document.getElementById('news-promo-search-keywords-reset');
+    const promoSearchKeywordsFeedback = document.getElementById('news-promo-search-keywords-feedback');
+    const surveyApiUrlInput = document.getElementById('news-survey-api-url');
+    const surveyApiModelInput = document.getElementById('news-survey-api-model');
+    const surveyApiKeyInput = document.getElementById('news-survey-api-key');
+
+    if (!relatedNewsSearchEnabled || !reportSearchEnabled || !promoSearchEngine || !promoKeywordFields || !relatedNewsSearchKeywords || !relatedNewsSearchKeywordsDefault || !reportSearchKeywords || !reportSearchKeywordsDefault || !promoSearchKeywordsSave || !promoSearchKeywordsReset || !promoSearchKeywordsFeedback) {
+      return;
+    }
+
+    function syncPromoSearchMode() {
+      const enabled = relatedNewsSearchEnabled.checked || reportSearchEnabled.checked;
+      promoSearchEngine.disabled = !enabled;
+      promoKeywordFields.classList.toggle('hidden', !enabled);
+      relatedNewsSearchKeywords.disabled = !enabled;
+      reportSearchKeywords.disabled = !enabled;
+    }
+
+    relatedNewsSearchEnabled.addEventListener('change', syncPromoSearchMode);
+    reportSearchEnabled.addEventListener('change', syncPromoSearchMode);
+    if (promoSearchKeywordsAiOptimize instanceof HTMLButtonElement) {
+      promoSearchKeywordsAiOptimize.addEventListener('click', async () => {
+        const apiUrl = surveyApiUrlInput instanceof HTMLInputElement ? surveyApiUrlInput.value.trim() : '';
+        const apiModel = surveyApiModelInput instanceof HTMLInputElement ? surveyApiModelInput.value.trim() : '';
+        const apiKey = surveyApiKeyInput instanceof HTMLInputElement ? surveyApiKeyInput.value.trim() : '';
+        if (!apiUrl || !apiModel || !apiKey) {
+          promoSearchKeywordsFeedback.textContent = '请先填写 AI API URL、API Key 和模型名。';
+          return;
+        }
+
+        promoSearchKeywordsAiOptimize.disabled = true;
+        promoSearchKeywordsAiOptimize.classList.add('is-pending');
+        promoSearchKeywordsAiOptimize.textContent = 'AI 优化中...';
+        promoSearchKeywordsFeedback.textContent = '正在调用 AI 优化补充检索关键词...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          formData.append('related_news_search_keywords', relatedNewsSearchKeywords.value);
+          formData.append('report_search_keywords', reportSearchKeywords.value);
+          formData.append('survey_api_url', apiUrl);
+          formData.append('survey_api_key', apiKey);
+          formData.append('survey_api_model', apiModel);
+          const response = await fetch('/api/news-filter/keywords/suggest', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || 'AI 优化检索关键词失败');
+          }
+          relatedNewsSearchKeywords.value = payload.related_news_search_keywords || '';
+          reportSearchKeywords.value = payload.report_search_keywords || '';
+          const splitNote = Number(payload.related_news_keyword_auto_split_count || 0) > 0
+            ? `（已自动拆分 ${payload.related_news_keyword_auto_split_count} 个关键词块）`
+            : '';
+          const warningNote = payload.keyword_warning ? ` ${payload.keyword_warning}` : '';
+          promoSearchKeywordsFeedback.textContent = `已 AI 优化并保存补充检索关键词，下次抓取会直接使用。${splitNote}${warningNote}`;
+        } catch (error) {
+          promoSearchKeywordsFeedback.textContent = error instanceof Error ? error.message : 'AI 优化检索关键词失败';
+        } finally {
+          promoSearchKeywordsAiOptimize.disabled = false;
+          promoSearchKeywordsAiOptimize.classList.remove('is-pending');
+          promoSearchKeywordsAiOptimize.textContent = 'AI 优化检索关键词';
+        }
+      });
+    }
+    promoSearchKeywordsSave.addEventListener('click', async () => {
+      promoSearchKeywordsSave.disabled = true;
+      promoSearchKeywordsSave.classList.add('is-pending');
+      promoSearchKeywordsSave.textContent = '保存中...';
+      promoSearchKeywordsFeedback.textContent = '正在保存补充检索关键词...';
+
+      try {
+        const formData = new FormData();
+        formData.append('country_code', CURRENT_COUNTRY_CODE);
+        formData.append('related_news_search_keywords', relatedNewsSearchKeywords.value);
+        formData.append('report_search_keywords', reportSearchKeywords.value);
+        const response = await fetch('/api/news-filter/keywords', {
+          method: 'POST',
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || '保存关键词失败');
+        }
+        relatedNewsSearchKeywords.value = payload.related_news_search_keywords || '';
+        reportSearchKeywords.value = payload.report_search_keywords || '';
+        const splitNote = Number(payload.related_news_keyword_auto_split_count || 0) > 0
+          ? `（已自动拆分 ${payload.related_news_keyword_auto_split_count} 个关键词块）`
+          : '';
+        const warningNote = payload.keyword_warning ? ` ${payload.keyword_warning}` : '';
+        promoSearchKeywordsFeedback.textContent = `已保存补充检索关键词。${splitNote}${warningNote}`;
+      } catch (error) {
+        promoSearchKeywordsFeedback.textContent = error instanceof Error ? error.message : '保存关键词失败';
+      } finally {
+        promoSearchKeywordsSave.disabled = false;
+        promoSearchKeywordsSave.classList.remove('is-pending');
+        promoSearchKeywordsSave.textContent = '保存关键词';
+      }
+    });
+    if (promoSearchKeywordsPrevious instanceof HTMLButtonElement) {
+      promoSearchKeywordsPrevious.addEventListener('click', async () => {
+        promoSearchKeywordsPrevious.disabled = true;
+        promoSearchKeywordsPrevious.classList.add('is-pending');
+        promoSearchKeywordsPrevious.textContent = '恢复中...';
+        promoSearchKeywordsFeedback.textContent = '正在读取上一次保存的补充检索关键词...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          const response = await fetch('/api/news-filter/keywords/previous', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '暂无上一版可恢复');
+          }
+          relatedNewsSearchKeywords.value = payload.related_news_search_keywords || relatedNewsSearchKeywords.value || '';
+          reportSearchKeywords.value = payload.report_search_keywords || reportSearchKeywords.value || '';
+          promoSearchKeywordsFeedback.textContent = '已恢复到上一次补充检索关键词文本，请点击“保存关键词”后才会真正修改配置。';
+        } catch (error) {
+          promoSearchKeywordsFeedback.textContent = error instanceof Error ? error.message : '恢复上一次失败';
+        } finally {
+          promoSearchKeywordsPrevious.disabled = false;
+          promoSearchKeywordsPrevious.classList.remove('is-pending');
+          promoSearchKeywordsPrevious.textContent = '恢复上一次';
+        }
+      });
+    }
+    promoSearchKeywordsReset.addEventListener('click', async () => {
+      promoSearchKeywordsReset.disabled = true;
+      promoSearchKeywordsReset.classList.add('is-pending');
+      promoSearchKeywordsReset.textContent = '恢复中...';
+      promoSearchKeywordsFeedback.textContent = '正在读取系统默认关键词...';
+
+      try {
+        const formData = new FormData();
+        formData.append('country_code', CURRENT_COUNTRY_CODE);
+        const response = await fetch('/api/news-filter/keywords/default', {
+          method: 'POST',
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || '恢复系统默认失败');
+        }
+        relatedNewsSearchKeywords.value = payload.related_news_search_keywords || relatedNewsSearchKeywordsDefault.value || '';
+        reportSearchKeywords.value = payload.report_search_keywords || reportSearchKeywordsDefault.value || '';
+        promoSearchKeywordsFeedback.textContent = '已恢复到系统默认关键词文本，请点击“保存关键词”后才会真正修改配置。';
+      } catch (error) {
+        promoSearchKeywordsFeedback.textContent = error instanceof Error ? error.message : '恢复系统默认失败';
+      } finally {
+        promoSearchKeywordsReset.disabled = false;
+        promoSearchKeywordsReset.classList.remove('is-pending');
+        promoSearchKeywordsReset.textContent = '恢复系统默认';
+      }
+    });
+    syncPromoSearchMode();
+  })();
+
+  (function () {
+    const filterModeSelect = document.getElementById('news-survey-filter-mode');
+    const apiUrlInput = document.getElementById('news-survey-api-url');
+    const apiModelInput = document.getElementById('news-survey-api-model');
+    const apiKeyInput = document.getElementById('news-survey-api-key');
+    const apiTestButton = document.getElementById('news-survey-api-test');
+    const apiTestFeedback = document.getElementById('news-survey-api-feedback');
+    const promptFields = document.getElementById('news-survey-prompt-fields');
+    const promptTextarea = document.getElementById('news-survey-system-prompt');
+    const promptDefaultTextarea = document.getElementById('news-survey-system-prompt-default');
+    const promptSourceLabel = document.getElementById('news-survey-system-prompt-source');
+    const promptAiOptimizeButton = document.getElementById('news-survey-system-prompt-ai-optimize');
+    const promptSaveButton = document.getElementById('news-survey-system-prompt-save');
+    const promptPreviousButton = document.getElementById('news-survey-system-prompt-previous');
+    const promptResetButton = document.getElementById('news-survey-system-prompt-reset');
+    const promptFeedback = document.getElementById('news-survey-system-prompt-feedback');
+
+    if (!filterModeSelect || !apiUrlInput || !apiModelInput || !apiKeyInput || !apiTestButton || !apiTestFeedback || !promptFields || !promptTextarea || !promptDefaultTextarea || !promptSourceLabel || !promptSaveButton || !promptResetButton || !promptFeedback) {
+      return;
+    }
+
+    function updatePromptSourceLabel(payload) {
+      if (!payload || !payload.survey_system_prompt_source_label) {
+        return;
+      }
+      promptSourceLabel.textContent = payload.survey_system_prompt_source_label;
+    }
+
+    function syncSurveyFilterMode() {
+      const isAiMode = filterModeSelect.value === 'ai';
+      promptFields.classList.toggle('hidden', !isAiMode);
+      promptTextarea.disabled = !isAiMode;
+    }
+
+    filterModeSelect.addEventListener('change', syncSurveyFilterMode);
+    if (promptAiOptimizeButton instanceof HTMLButtonElement) {
+      promptAiOptimizeButton.addEventListener('click', async () => {
+        const apiUrl = apiUrlInput.value.trim();
+        const apiModel = apiModelInput.value.trim();
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiUrl || !apiModel || !apiKey) {
+          promptFeedback.textContent = '请先填写 AI API URL、API Key 和模型名。';
+          return;
+        }
+
+        promptAiOptimizeButton.disabled = true;
+        promptAiOptimizeButton.classList.add('is-pending');
+        promptAiOptimizeButton.textContent = 'AI 优化中...';
+        promptFeedback.textContent = '正在调用 AI 优化筛选提示词...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          formData.append('survey_system_prompt', promptTextarea.value);
+          formData.append('survey_api_url', apiUrl);
+          formData.append('survey_api_key', apiKey);
+          formData.append('survey_api_model', apiModel);
+          const response = await fetch('/api/news-filter/survey-prompt/suggest', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || 'AI 优化提示词失败');
+          }
+          promptTextarea.value = payload.survey_system_prompt || '';
+          updatePromptSourceLabel(payload);
+          promptFeedback.textContent = '已 AI 优化并保存提示词，下次抓取会直接使用。';
+        } catch (error) {
+          promptFeedback.textContent = error instanceof Error ? error.message : 'AI 优化提示词失败';
+        } finally {
+          promptAiOptimizeButton.disabled = false;
+          promptAiOptimizeButton.classList.remove('is-pending');
+          promptAiOptimizeButton.textContent = 'AI 优化提示词';
+        }
+      });
+    }
+    promptSaveButton.addEventListener('click', async () => {
+      promptSaveButton.disabled = true;
+      promptSaveButton.classList.add('is-pending');
+      promptSaveButton.textContent = '保存中...';
+      promptFeedback.textContent = '正在保存 AI 提示词...';
+
+      try {
+        const formData = new FormData();
+        formData.append('country_code', CURRENT_COUNTRY_CODE);
+        formData.append('survey_system_prompt', promptTextarea.value);
+        const response = await fetch('/api/news-filter/survey-prompt', {
+          method: 'POST',
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || '保存提示词失败');
+        }
+        promptTextarea.value = payload.survey_system_prompt || '';
+          updatePromptSourceLabel(payload);
+        promptFeedback.textContent = '已保存 AI 提示词。';
+      } catch (error) {
+        promptFeedback.textContent = error instanceof Error ? error.message : '保存提示词失败';
+      } finally {
+        promptSaveButton.disabled = false;
+        promptSaveButton.classList.remove('is-pending');
+        promptSaveButton.textContent = '保存提示词';
+      }
+    });
+    if (promptPreviousButton instanceof HTMLButtonElement) {
+      promptPreviousButton.addEventListener('click', async () => {
+        promptPreviousButton.disabled = true;
+        promptPreviousButton.classList.add('is-pending');
+        promptPreviousButton.textContent = '恢复中...';
+        promptFeedback.textContent = '正在读取上一次保存的 AI 提示词...';
+
+        try {
+          const formData = new FormData();
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          const response = await fetch('/api/news-filter/survey-prompt/previous', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '暂无上一版可恢复');
+          }
+          promptTextarea.value = payload.survey_system_prompt || promptTextarea.value || '';
+          updatePromptSourceLabel(payload);
+          promptFeedback.textContent = '已恢复到上一次 AI 提示词文本，请点击“保存提示词”后才会真正修改配置。';
+        } catch (error) {
+          promptFeedback.textContent = error instanceof Error ? error.message : '恢复上一次失败';
+        } finally {
+          promptPreviousButton.disabled = false;
+          promptPreviousButton.classList.remove('is-pending');
+          promptPreviousButton.textContent = '恢复上一次';
+        }
+      });
+    }
+    promptResetButton.addEventListener('click', async () => {
+      promptResetButton.disabled = true;
+      promptResetButton.classList.add('is-pending');
+      promptResetButton.textContent = '恢复中...';
+      promptFeedback.textContent = '正在读取系统默认提示词...';
+
+      try {
+        const formData = new FormData();
+        formData.append('country_code', CURRENT_COUNTRY_CODE);
+        const response = await fetch('/api/news-filter/survey-prompt/default', {
+          method: 'POST',
+          body: formData,
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || '恢复系统默认失败');
+        }
+        promptTextarea.value = payload.survey_system_prompt || promptDefaultTextarea.value || '';
+          updatePromptSourceLabel(payload);
+        promptFeedback.textContent = '已恢复到系统默认提示词文本，请点击“保存提示词”后才会真正修改配置。';
+      } catch (error) {
+        promptFeedback.textContent = error instanceof Error ? error.message : '恢复系统默认失败';
+      } finally {
+        promptResetButton.disabled = false;
+        promptResetButton.classList.remove('is-pending');
+        promptResetButton.textContent = '恢复系统默认';
+      }
+    });
+    apiTestButton.addEventListener('click', async () => {
+      const form = apiTestButton.closest('form');
+      if (!(form instanceof HTMLFormElement)) {
+        return;
+      }
+
+      apiTestButton.disabled = true;
+      apiTestButton.classList.add('is-pending');
+      apiTestFeedback.textContent = '正在测试 API 连通性...';
+
+      try {
+        const response = await fetch('/api/test/survey-api', {
+          method: 'POST',
+          body: new FormData(form),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          const detail = payload.detail ? `；${payload.detail}` : '';
+          throw new Error((payload.error || 'API 调用失败') + detail);
+        }
+        const elapsedLabel = payload.elapsed_ms ? `${payload.elapsed_ms} ms` : '已完成';
+        apiTestFeedback.textContent = `调用成功：${payload.api_model} · ${elapsedLabel} · ${payload.api_url}`;
+      } catch (error) {
+        apiTestFeedback.textContent = error instanceof Error ? error.message : 'API 调用失败';
+      } finally {
+        apiTestButton.disabled = false;
+        apiTestButton.classList.remove('is-pending');
+      }
+    });
+    syncSurveyFilterMode();
+  })();
+
+  (function () {
+    const newsForm = document.querySelector('.js-manual-submit-form[data-job-target="news"]');
+    const countrySwitchForm = document.getElementById('news-country-switch-form');
+    const countrySwitchSelect = document.getElementById('news-country-select');
+    if (!(newsForm instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const excludedNames = new Set([
+      'platform_aliases_text',
+      'related_news_search_keywords',
+      'report_search_keywords',
+      'promo_search_keywords',
+      'survey_system_prompt',
+    ]);
+    const excludedIds = new Set([
+      'news-promo-search-keywords',
+      'news-report-search-keywords',
+      'news-survey-system-prompt',
+      'country-alias-text',
+    ]);
+    let saveTimer = null;
+
+    function isNewsAutoSaveControl(target) {
+      if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement)) {
+        return false;
+      }
+      if (!target.name || target.classList.contains('js-toggle-password')) {
+        return false;
+      }
+      if (excludedNames.has(target.name) || excludedIds.has(target.id)) {
+        return false;
+      }
+      const type = target instanceof HTMLInputElement ? target.type : '';
+      return !['button', 'submit', 'reset', 'file'].includes(type);
+    }
+
+    function buildNewsAutoSaveData() {
+      const formData = new FormData();
+      formData.append('country_code', CURRENT_COUNTRY_CODE);
+      const controls = newsForm.querySelectorAll('input, select, textarea');
+      controls.forEach((control) => {
+        if (!isNewsAutoSaveControl(control)) {
+          return;
+        }
+        if (control.name === 'country_code') {
+          return;
+        }
+        if (control instanceof HTMLInputElement && (control.type === 'checkbox' || control.type === 'radio')) {
+          if (control.checked) {
+            formData.append(control.name, control.value);
+          }
+          return;
+        }
+        formData.append(control.name, control.value);
+      });
+      return formData;
+    }
+
+    async function saveNewsFormStateNow() {
+      if (saveTimer) {
+        window.clearTimeout(saveTimer);
+        saveTimer = null;
+      }
+      const response = await fetch('/api/news-form-state', {
+        method: 'POST',
+        body: buildNewsAutoSaveData(),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || '保存新闻抓取设置失败');
+      }
+      return payload;
+    }
+
+    function scheduleNewsFormStateSave(delay = 500) {
+      if (saveTimer) {
+        window.clearTimeout(saveTimer);
+      }
+      saveTimer = window.setTimeout(() => {
+        saveTimer = null;
+        saveNewsFormStateNow().catch(() => {});
+      }, delay);
+    }
+
+    newsForm.addEventListener('change', (event) => {
+      if (isNewsAutoSaveControl(event.target)) {
+        scheduleNewsFormStateSave(0);
+      }
+    });
+    newsForm.addEventListener('input', (event) => {
+      if (isNewsAutoSaveControl(event.target)) {
+        scheduleNewsFormStateSave(700);
+      }
+    });
+    window.requestNewsAutoSave = () => {
+      scheduleNewsFormStateSave(0);
+    };
+
+    if (countrySwitchForm instanceof HTMLFormElement && countrySwitchSelect instanceof HTMLSelectElement) {
+      countrySwitchSelect.addEventListener('change', async () => {
+        try {
+          await saveNewsFormStateNow();
+        } catch (error) {
+          // 切换国家不因为一次自动保存失败而卡住。
+        }
+        countrySwitchForm.submit();
+      });
+    }
+  })();
+
+  (function () {
+    const selectAllButton = document.getElementById('news-select-all');
+    const clearAllButton = document.getElementById('news-clear-all');
+    const platformCheckboxes = document.querySelectorAll('input[name="news_builtin_platforms"]');
+
+    if (!platformCheckboxes.length) {
+      return;
+    }
+
+    if (selectAllButton) {
+      selectAllButton.addEventListener('click', () => {
+        platformCheckboxes.forEach((checkbox) => {
+          checkbox.checked = true;
+        });
+        if (typeof window.requestNewsAutoSave === 'function') {
+          window.requestNewsAutoSave();
+        }
+      });
+    }
+
+    if (clearAllButton) {
+      clearAllButton.addEventListener('click', () => {
+        platformCheckboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+        if (typeof window.requestNewsAutoSave === 'function') {
+          window.requestNewsAutoSave();
+        }
+      });
+    }
+  })();
+
+  (function () {
+    const toggles = document.querySelectorAll('.js-toggle-password');
+
+    toggles.forEach((toggle) => {
+      if (!(toggle instanceof HTMLInputElement)) {
+        return;
+      }
+      const targetId = toggle.dataset.target;
+      if (!targetId) {
+        return;
+      }
+      const target = document.getElementById(targetId);
+      if (!(target instanceof HTMLInputElement)) {
+        return;
+      }
+
+      const syncVisibility = () => {
+        target.type = toggle.checked ? 'text' : 'password';
+      };
+
+      toggle.addEventListener('change', syncVisibility);
+      syncVisibility();
+    });
+  })();
+
+  (function () {
+    const forms = document.querySelectorAll('.js-manual-submit-form');
+
+    forms.forEach((form) => {
+      form.addEventListener('keydown', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+
+        if (event.key !== 'Enter') {
+          return;
+        }
+
+        if (target.tagName === 'TEXTAREA') {
+          return;
+        }
+
+        event.preventDefault();
+      });
+
+      const submitButton = form.querySelector('.js-mouse-submit');
+      if (!(submitButton instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      submitButton.dataset.defaultLabel = submitButton.textContent || '提交';
+
+      submitButton.addEventListener('click', async () => {
+        const asyncUrl = form.getAttribute('data-async-url');
+        const jobTarget = form.getAttribute('data-job-target');
+        if (!asyncUrl || !jobTarget) {
+          form.requestSubmit();
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = '运行中…';
+
+        try {
+          const response = await fetch(asyncUrl, {
+            method: 'POST',
+            body: new FormData(form),
+          });
+          const payload = await parseJsonResponse(response, asyncUrl);
+          if (!response.ok) {
+            throw new Error(buildApiErrorMessage(payload, '任务启动失败'));
+          }
+          startJobPolling(jobTarget, payload, submitButton);
+        } catch (error) {
+          submitButton.disabled = false;
+          submitButton.textContent = submitButton.dataset.defaultLabel || '提交';
+          renderJobFailure(jobTarget, error instanceof Error ? error.message : '任务启动失败');
+        }
+      });
+    });
+  })();
+
+  (function () {
+    const actionSelect = document.getElementById('source-action');
+    const sideSelect = document.getElementById('sm-side');
+    const platformSelect = document.getElementById('sm-platform-select');
+    const urlSelect = document.getElementById('sm-url-select');
+    const platformTextWrap = document.getElementById('sm-platform-text-wrap');
+    const platformTextInput = platformTextWrap ? platformTextWrap.querySelector('input[name="sm_platform_text"]') : null;
+    const platformSelectWrap = document.getElementById('sm-platform-select-wrap');
+    const urlTextWrap = document.getElementById('sm-url-text-wrap');
+    const urlSelectWrap = document.getElementById('sm-url-select-wrap');
+    const apiFields = document.getElementById('sm-api-fields');
+    const listOptions = document.getElementById('sm-list-options');
+    const addOptions = document.getElementById('sm-add-options');
+    const submitLabel = document.getElementById('source-action-submit-label');
+    const showInactiveInput = document.querySelector('input[name="show_inactive"]');
+
+    if (!actionSelect || !sideSelect || !platformSelect || !urlSelect) {
+      return;
+    }
+
+    function relevantRecords(action) {
+      const sideValue = sideSelect.value;
+      const includeInactive = action === 'list' && showInactiveInput && showInactiveInput.checked;
+
+      return sourceManagerRecords.filter((record) => {
+        if (action === 'remove' && !record.active) {
+          return false;
+        }
+        if (action === 'reactivate' && record.active) {
+          return false;
+        }
+        if (!includeInactive && action === 'list' && !record.active) {
+          return false;
+        }
+        if (sideValue && record.side !== sideValue) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function fillSelect(select, options, placeholder, selectedValue) {
+      const previousValue = selectedValue ?? select.value;
+      select.innerHTML = '';
+
+      const firstOption = document.createElement('option');
+      firstOption.value = '';
+      firstOption.textContent = placeholder;
+      select.appendChild(firstOption);
+
+      options.forEach((option) => {
+        const optionNode = document.createElement('option');
+        optionNode.value = option.value;
+        optionNode.textContent = option.label;
+        if (option.value === previousValue) {
+          optionNode.selected = true;
+        }
+        select.appendChild(optionNode);
+      });
+
+      if (!options.some((option) => option.value === previousValue)) {
+        select.value = '';
+      }
+    }
+
+    function syncSourceSideOptions(action) {
+      const previousValue = sideSelect.value || sourceManagerState.sm_side || '';
+      const options = action === 'add'
+        ? [
+            { value: 'media', label: 'media' },
+            { value: 'buyer', label: 'buyer' },
+            { value: 'seller', label: 'seller' },
+          ]
+        : [
+            { value: '', label: '全部' },
+            { value: 'media', label: 'media' },
+            { value: 'buyer', label: 'buyer' },
+            { value: 'seller', label: 'seller' },
+          ];
+      sideSelect.innerHTML = '';
+      options.forEach((option) => {
+        const optionNode = document.createElement('option');
+        optionNode.value = option.value;
+        optionNode.textContent = option.label;
+        sideSelect.appendChild(optionNode);
+      });
+      const allowedValues = new Set(options.map((option) => option.value));
+      sideSelect.value = allowedValues.has(previousValue) ? previousValue : (action === 'add' ? 'media' : '');
+      sourceManagerState.sm_side = sideSelect.value;
+    }
+
+    function syncSourceManagerFields() {
+      const action = actionSelect.value;
+      syncSourceSideOptions(action);
+      const dropdownMode = action === 'list' || action === 'remove' || action === 'reactivate';
+      const records = relevantRecords(action);
+      const addMediaSource = action === 'add' && sideSelect.value === 'media';
+
+      platformTextWrap.classList.toggle('hidden', dropdownMode || addMediaSource);
+      if (platformTextInput instanceof HTMLInputElement) {
+        platformTextInput.disabled = addMediaSource;
+      }
+      urlTextWrap.classList.toggle('hidden', dropdownMode);
+      platformSelectWrap.classList.toggle('hidden', !dropdownMode);
+      urlSelectWrap.classList.toggle('hidden', !dropdownMode);
+      apiFields.classList.toggle('hidden', action !== 'add');
+      addOptions.classList.toggle('hidden', action !== 'add');
+      listOptions.classList.toggle('hidden', action !== 'list');
+      if (submitLabel) {
+        const buttonLabels = {
+          list: '查看列表',
+          add: '新增来源',
+          reactivate: '重新启用来源',
+          remove: '停用来源',
+        };
+        submitLabel.textContent = buttonLabels[action] || '执行来源管理';
+      }
+
+      if (!dropdownMode) {
+        return;
+      }
+
+      fillSelect(
+        platformSelect,
+        buildSourceManagerPlatformOptions(records),
+        action === 'list' ? '全部平台' : '请选择平台',
+        sourceManagerState.sm_platform_select
+      );
+
+      const selectedPlatform = platformSelect.value;
+      const filteredUrls = records.filter((record) => !selectedPlatform || record.platform === selectedPlatform);
+      const uniqueUrls = [];
+      filteredUrls.forEach((record) => {
+        if (!uniqueUrls.some((item) => item.value === record.source_url)) {
+          const statusLabel = record.active ? '启用中' : '已停用';
+          uniqueUrls.push({
+            value: record.source_url,
+            label: `${record.source_url} · ${record.side} · ${statusLabel}`,
+          });
+        }
+      });
+
+      fillSelect(
+        urlSelect,
+        uniqueUrls,
+        action === 'list' ? '全部网址' : '请选择网址',
+        sourceManagerState.sm_url_select
+      );
+    }
+
+    actionSelect.addEventListener('change', () => {
+      sourceManagerState.sm_platform_select = '';
+      sourceManagerState.sm_url_select = '';
+      syncSourceManagerFields();
+    });
+
+    sideSelect.addEventListener('change', () => {
+      sourceManagerState.sm_platform_select = '';
+      sourceManagerState.sm_url_select = '';
+      syncSourceManagerFields();
+    });
+
+    platformSelect.addEventListener('change', () => {
+      sourceManagerState.sm_platform_select = platformSelect.value;
+      sourceManagerState.sm_url_select = '';
+      syncSourceManagerFields();
+    });
+
+    if (showInactiveInput) {
+      showInactiveInput.addEventListener('change', () => {
+        sourceManagerState.sm_platform_select = platformSelect.value;
+        sourceManagerState.sm_url_select = urlSelect.value;
+        syncSourceManagerFields();
+      });
+    }
+
+    window.syncSourceManagerFields = syncSourceManagerFields;
+    syncSourceManagerFields();
+  })();
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function responseSnippet(value) {
+    const normalized = String(value ?? '').replace(/\s+/g, ' ').trim();
+    return normalized ? normalized.slice(0, 500) : '空响应';
+  }
+
+  async function parseJsonResponse(response, label = '接口') {
+    const responseText = await response.text();
+    if (!responseText.trim()) {
+      if (response.ok) {
+        return {};
+      }
+      throw new Error(`${label} 返回空响应（HTTP ${response.status}）`);
+    }
+
+    try {
+      return JSON.parse(responseText);
+    } catch (error) {
+      throw new Error(
+        `${label} 返回了非 JSON 响应（HTTP ${response.status} ${response.statusText || ''}）：${responseSnippet(responseText)}`
+      );
+    }
+  }
+
+  function buildApiErrorMessage(payload, fallback) {
+    if (!payload || typeof payload !== 'object') {
+      return fallback;
+    }
+    const message = String(payload.error || payload.message || fallback || '请求失败').trim();
+    const detail = String(payload.detail || '').trim();
+    if (detail && !message.includes(detail)) {
+      return `${message}\n\n${detail}`;
+    }
+    return message || fallback;
+  }
+
+  function fillStandaloneSelect(select, options, placeholder, selectedValue = '') {
+    if (!(select instanceof HTMLSelectElement)) {
+      return;
+    }
+    select.innerHTML = '';
+
+    const firstOption = document.createElement('option');
+    firstOption.value = '';
+    firstOption.textContent = placeholder;
+    select.appendChild(firstOption);
+
+    options.forEach((option) => {
+      const optionNode = document.createElement('option');
+      optionNode.value = option.value;
+      optionNode.textContent = option.label;
+      if (option.value === selectedValue) {
+        optionNode.selected = true;
+      }
+      select.appendChild(optionNode);
+    });
+
+    if (selectedValue && !options.some((option) => option.value === selectedValue)) {
+      select.value = '';
+    }
+  }
+
+  function syncSourceRiskFilters(records) {
+    const platformFilter = document.getElementById('source-risk-platform-filter');
+    const sideFilter = document.getElementById('source-risk-side-filter');
+    if (!(platformFilter instanceof HTMLSelectElement) || !(sideFilter instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    const selectedSide = sideFilter.value;
+    fillStandaloneSelect(
+      sideFilter,
+      [
+        { value: 'media', label: 'media' },
+        { value: 'buyer', label: 'buyer' },
+        { value: 'seller', label: 'seller' },
+      ],
+      '全部侧别',
+      selectedSide
+    );
+
+    if (sideFilter.value === 'media') {
+      fillStandaloneSelect(
+        platformFilter,
+        [],
+        '全部品牌',
+        ''
+      );
+      platformFilter.disabled = true;
+      return;
+    }
+
+    const visibleRecords = Array.isArray(records)
+      ? records.filter((record) => !sideFilter.value || record.side === sideFilter.value)
+      : [];
+    fillStandaloneSelect(
+      platformFilter,
+      buildSourceManagerPlatformOptions(visibleRecords),
+      '全部品牌',
+      platformFilter.value
+    );
+    platformFilter.disabled = false;
+  }
+
+  function renderSourceRecordCards(cards) {
+    const container = document.getElementById('source-record-card-list');
+    if (!(container instanceof HTMLElement)) {
+      return;
+    }
+
+    if (!Array.isArray(cards) || !cards.length) {
+      container.innerHTML = '<div class="article-empty">当前筛选条件下没有来源记录。</div>';
+      return;
+    }
+
+    container.innerHTML = cards.map((record) => {
+      const sourceTitle = record.side === 'media'
+        ? (record.platform_display || record.platform || '')
+        : `${record.platform_display || record.platform || ''} · ${record.side || ''}`;
+      const activeLabel = record.active ? '启用中' : '已停用';
+      const riskLabel = record.completeness_risk || 'unknown';
+      const capabilityTags = Array.isArray(record.capability_tags) ? record.capability_tags : [];
+      const capabilityTagHtml = capabilityTags.map((tag) => `<span class="source-tag capability">${escapeHtml(tag)}</span>`).join('');
+      const feedCount = Array.isArray(record.feed_candidates) ? record.feed_candidates.length : 0;
+      const searchCount = Number(record.searchable_form_count || 0) + (Array.isArray(record.search_links) ? record.search_links.length : 0);
+      const apiCount = Array.isArray(record.api_candidates) ? record.api_candidates.length : 0;
+      const accessStatus = [record.access_status || '未知', record.http_status ? `HTTP ${record.http_status}` : ''].filter(Boolean).join(' · ');
+      const finalUrl = record.final_url || record.source_url || '';
+      const note = record.capability_error || record.access_note || record.completeness_reason || '暂无';
+
+      const lastYieldParts = [];
+      if (record.last_recent_article_count !== undefined && record.last_recent_article_count !== null && record.last_recent_article_count !== '') {
+        lastYieldParts.push(`${record.last_recent_article_count}`);
+      } else {
+        lastYieldParts.push('暂无');
+      }
+      if (Number(record.last_elapsed_seconds || 0) > 0) {
+        lastYieldParts.push(`${Number(record.last_elapsed_seconds || 0).toFixed(1)}s`);
+      }
+      if (record.last_zero_yield_reason) {
+        lastYieldParts.push(record.last_zero_yield_reason);
+      }
+      const lastYield = lastYieldParts.join(' / ');
+      const lastRecommendation = record.last_source_recommendation || '暂无';
+      const parseDiagnostic = `${record.last_search_endpoint_status || '暂无'} / selector ${Number(record.last_selector_match_count || 0)} / date ${Number(record.last_parsed_date_count || 0)}`;
+
+      return `
+        <article class="source-card">
+          <div class="source-card-head">
+            <div>
+              <h4 class="source-card-title">${escapeHtml(sourceTitle)}</h4>
+              <div class="source-card-url">${escapeHtml(record.source_url || '')}</div>
+            </div>
+          </div>
+          <div class="source-card-meta">
+            <span class="source-tag ${record.active ? 'status-active' : 'status-inactive'}">${activeLabel}</span>
+            <span class="source-tag risk-${escapeHtml(riskLabel)}">完整性风险：${escapeHtml(riskLabel)}</span>
+            ${capabilityTagHtml}
+          </div>
+          <div class="source-detail-grid">
+            <div class="source-detail">
+              <strong>评估说明</strong>
+              <span>${escapeHtml(note)}</span>
+            </div>
+            <div class="source-detail">
+              <strong>上次产出</strong>
+              <span>${escapeHtml(lastYield)}</span>
+            </div>
+            <div class="source-detail">
+              <strong>建议操作</strong>
+              <span>${escapeHtml(lastRecommendation)}</span>
+            </div>
+            <div class="source-detail">
+              <strong>解析诊断</strong>
+              <span>${escapeHtml(parseDiagnostic)}</span>
+            </div>
+            <div class="source-detail">
+              <strong>访问状态</strong>
+              <span>${escapeHtml(accessStatus)}</span>
+            </div>
+            <div class="source-detail">
+              <strong>最终网址</strong>
+              <span>${escapeHtml(finalUrl)}</span>
+            </div>
+            <div class="source-detail">
+              <strong>发现能力</strong>
+              <span>RSS/Atom ${feedCount} 条 · 搜索入口 ${searchCount} 处 · API 痕迹 ${apiCount} 处</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  function buildSourceListQuery() {
+    const sideSelect = document.getElementById('source-risk-side-filter');
+    const platformSelect = document.getElementById('source-risk-platform-filter');
+    const showInactiveInput = document.querySelector('input[name="show_inactive"]');
+    return new URLSearchParams({
+      country_code: CURRENT_COUNTRY_CODE,
+      show_inactive: showInactiveInput instanceof HTMLInputElement && showInactiveInput.checked ? '1' : '0',
+      side: sideSelect instanceof HTMLSelectElement ? sideSelect.value : '',
+      platform: platformSelect instanceof HTMLSelectElement ? platformSelect.value : '',
+      source_url: '',
+    });
+  }
+
+  let sourceRecordCardsLoaded = false;
+  let sourceRecordCardsLoading = false;
+
+  async function refreshSourceRecordCards(force = false) {
+    if (sourceRecordCardsLoading) {
+      return;
+    }
+    if (!force && sourceRecordCardsLoaded) {
+      return;
+    }
+    const feedback = document.getElementById('source-list-feedback');
+    if (feedback instanceof HTMLElement) {
+      feedback.textContent = '正在读取上次网站评估结果...';
+    }
+
+    sourceRecordCardsLoading = true;
+    try {
+      const response = await fetch(`/api/source-records?${buildSourceListQuery().toString()}`);
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || '刷新来源列表失败');
+      }
+      sourceManagerRecords = Array.isArray(payload.records) ? payload.records : [];
+      if (typeof window.syncSourceManagerFields === 'function') {
+        window.syncSourceManagerFields();
+      }
+      syncSourceRiskFilters(sourceManagerRecords);
+      renderSourceRecordCards(Array.isArray(payload.cards) ? payload.cards : []);
+      sourceRecordCardsLoaded = true;
+      if (feedback instanceof HTMLElement) {
+        feedback.textContent = `已载入 ${Array.isArray(payload.cards) ? payload.cards.length : 0} 条来源评估结果。`;
+      }
+    } catch (error) {
+      if (feedback instanceof HTMLElement) {
+        feedback.textContent = error instanceof Error ? error.message : '读取来源评估结果失败';
+      }
+    } finally {
+      sourceRecordCardsLoading = false;
+    }
+  }
+
+  (function () {
+    const toggleButton = document.getElementById('source-record-toggle');
+    const recordPanel = document.getElementById('source-record-panel');
+    const sideFilter = document.getElementById('source-risk-side-filter');
+    const platformFilter = document.getElementById('source-risk-platform-filter');
+    const showInactiveInput = document.querySelector('input[name="show_inactive"]');
+
+    function syncSourceRecordPanel(open) {
+      if (!(toggleButton instanceof HTMLButtonElement) || !(recordPanel instanceof HTMLElement)) {
+        return;
+      }
+      recordPanel.classList.toggle('hidden', !open);
+      toggleButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggleButton.textContent = open ? '隐藏查看列表' : '展开查看列表';
+    }
+
+    let sourceRecordPanelOpen = false;
+    syncSourceRecordPanel(sourceRecordPanelOpen);
+
+    if (sideFilter instanceof HTMLSelectElement && !sideFilter.value) {
+      sideFilter.value = 'media';
+    }
+    syncSourceRiskFilters(sourceManagerRecords);
+
+    if (toggleButton instanceof HTMLButtonElement) {
+      toggleButton.addEventListener('click', () => {
+        sourceRecordPanelOpen = !sourceRecordPanelOpen;
+        syncSourceRecordPanel(sourceRecordPanelOpen);
+        if (sourceRecordPanelOpen) {
+          refreshSourceRecordCards(true);
+        }
+      });
+    }
+    if (sideFilter instanceof HTMLSelectElement) {
+      sideFilter.addEventListener('change', () => {
+        const platformFilterNode = document.getElementById('source-risk-platform-filter');
+        if (platformFilterNode instanceof HTMLSelectElement) {
+          platformFilterNode.value = '';
+        }
+        syncSourceRiskFilters(sourceManagerRecords);
+        sourceRecordCardsLoaded = false;
+        refreshSourceRecordCards(true);
+      });
+    }
+    if (platformFilter instanceof HTMLSelectElement) {
+      platformFilter.addEventListener('change', () => {
+        sourceRecordCardsLoaded = false;
+        refreshSourceRecordCards(true);
+      });
+    }
+    if (showInactiveInput instanceof HTMLInputElement) {
+      showInactiveInput.addEventListener('change', () => {
+        sourceRecordCardsLoaded = false;
+        refreshSourceRecordCards(true);
+      });
+    }
+  })();
+
+  function formatSeconds(totalSeconds) {
+    if (totalSeconds === null || totalSeconds === undefined) {
+      return '重新估算中';
+    }
+    const seconds = Math.max(0, Number(totalSeconds) || 0);
+    if (seconds < 60) {
+      return `${seconds} 秒`;
+    }
+    const minutes = Math.floor(seconds / 60);
+    const remain = seconds % 60;
+    if (!remain) {
+      return `${minutes} 分钟`;
+    }
+    return `${minutes} 分 ${remain} 秒`;
+  }
+
+  async function refreshArticleSourceOptions(selectLatest = false) {
+    const select = document.getElementById('article-source-select');
+    if (!(select instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    const previousValue = select.value;
+
+    try {
+      const response = await fetch(`/api/article-sources?country_code=${encodeURIComponent(CURRENT_COUNTRY_CODE)}`);
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || '刷新数据文件失败');
+      }
+
+      const sources = Array.isArray(payload.sources) ? payload.sources : [];
+      const latestSource = payload.latest_source || '';
+      select.innerHTML = '';
+
+      sources.forEach((source) => {
+        const option = document.createElement('option');
+        option.value = source.value;
+        option.textContent = source.label;
+        select.appendChild(option);
+      });
+
+      const nextValue = selectLatest && latestSource
+        ? latestSource
+        : (sources.some((source) => source.value === previousValue) ? previousValue : latestSource);
+
+      if (nextValue) {
+        select.value = nextValue;
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  function resetArticleBrowserFilters() {
+    const platformSelect = document.getElementById('article-platform-select');
+    const keywordInput = document.getElementById('article-keyword-input');
+    const starredFilter = document.getElementById('article-starred-filter');
+    if (platformSelect instanceof HTMLSelectElement) {
+      platformSelect.value = '';
+    }
+    if (keywordInput instanceof HTMLInputElement) {
+      keywordInput.value = '';
+    }
+    if (starredFilter instanceof HTMLSelectElement) {
+      starredFilter.value = '';
+    }
+  }
+
+  (function () {
+    const articleForm = document.getElementById('article-browser-form');
+    const articleSection = document.getElementById('article-section');
+    const sourceSelect = document.getElementById('article-source-select');
+    const platformSelect = document.getElementById('article-platform-select');
+    const keywordInput = document.getElementById('article-keyword-input');
+    const limitSelect = articleForm instanceof HTMLFormElement ? articleForm.querySelector('select[name="article_limit"]') : null;
+    const starredFilter = document.getElementById('article-starred-filter');
+    const refreshButton = document.getElementById('article-source-refresh');
+    const briefingButton = document.getElementById('article-briefing-table-generate');
+    const briefingTimer = document.getElementById('article-briefing-table-timer');
+    const newsSummaryButton = document.getElementById('article-news-summary-generate');
+    const newsSummaryTimer = document.getElementById('article-news-summary-timer');
+    const newsSummaryPanel = document.getElementById('article-news-summary-panel');
+    const newsSummaryText = document.getElementById('article-news-summary-text');
+    const newsSummaryCopyButton = document.getElementById('article-news-summary-copy');
+    const newsSummaryDownloadButton = document.getElementById('article-news-summary-download');
+    const newsSummaryMeta = document.getElementById('article-news-summary-meta');
+    const feedback = document.getElementById('article-action-feedback');
+    const manualArticlePanel = document.getElementById('manual-article-panel');
+    const manualArticleForm = document.getElementById('manual-article-form');
+    const manualArticleReset = document.getElementById('manual-article-reset');
+    const manualArticleAiFill = document.getElementById('manual-article-ai-fill');
+    let keywordSubmitTimer = null;
+    let briefingTimerHandle = null;
+    let newsSummaryTimerHandle = null;
+    let latestNewsSummaryFilename = '';
+
+    function setFeedback(message) {
+      if (feedback) {
+        feedback.textContent = message;
+      }
+    }
+
+    function currentArticleSource() {
+      if (sourceSelect instanceof HTMLSelectElement) {
+        return sourceSelect.value || '';
+      }
+      if (articleForm instanceof HTMLFormElement) {
+        const formData = new FormData(articleForm);
+        return String(formData.get('article_source') || '');
+      }
+      return '';
+    }
+
+    function resetManualArticleForm() {
+      if (!(manualArticleForm instanceof HTMLFormElement)) {
+        return;
+      }
+      manualArticleForm.reset();
+      const idInput = document.getElementById('manual-article-id');
+      if (idInput instanceof HTMLInputElement) {
+        idInput.value = '';
+      }
+    }
+
+    function setManualField(id, value) {
+      const field = document.getElementById(id);
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+        field.value = value || '';
+      }
+    }
+
+    function fillManualArticleForm(dataset) {
+      setManualField('manual-article-id', dataset.manualArticleId || '');
+      setManualField('manual-article-platform', dataset.platformLabel || '');
+      setManualField('manual-article-title', dataset.title || '');
+      setManualField('manual-article-title-zh', dataset.titleTranslated || '');
+      setManualField('manual-article-url', dataset.articleUrl || '');
+      setManualField('manual-article-source-name', dataset.sourceName || '');
+      setManualField('manual-article-published', dataset.publishedAt || '');
+      setManualField('manual-article-summary', dataset.summary || '');
+      setManualField('manual-article-dimensions', dataset.surveyDimensions || '');
+      setManualField('manual-article-question-ids', dataset.surveyQuestionIds || '');
+      setManualField('manual-article-examples', dataset.surveyIndicatorExamples || '');
+      setManualField('manual-article-sentiment', dataset.briefingSentiment || 'Neutral');
+      setManualField('manual-article-industry-category', dataset.industryTrendCategory || '');
+      setManualField('manual-article-industry-impact', dataset.industryTrendImpact || '');
+      setManualField('manual-article-industry-reason', dataset.industryTrendReason || '');
+      const trendFlag = document.getElementById('manual-article-industry-flag');
+      if (trendFlag instanceof HTMLInputElement) {
+        trendFlag.checked = dataset.industryTrendFlag === '1';
+      }
+      if (manualArticlePanel instanceof HTMLDetailsElement) {
+        manualArticlePanel.open = true;
+        manualArticlePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function filenameFromDisposition(disposition, fallback) {
+      const header = String(disposition || '');
+      const utfMatch = header.match(/filename\*=UTF-8''([^;]+)/i);
+      if (utfMatch) {
+        try {
+          return decodeURIComponent(utfMatch[1]);
+        } catch (error) {
+          return utfMatch[1];
+        }
+      }
+      const match = header.match(/filename="?([^";]+)"?/i);
+      return match ? match[1] : fallback;
+    }
+
+    async function readDownloadError(response) {
+      const text = await response.text();
+      try {
+        const payload = JSON.parse(text);
+        return payload.error || payload.message || text.slice(0, 500);
+      } catch (error) {
+        return text ? text.slice(0, 500) : `请求失败：${response.status}`;
+      }
+    }
+
+    function formatElapsedTime(milliseconds) {
+      const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const minutes = String(totalMinutes % 60).padStart(2, '0');
+      const hours = Math.floor(totalMinutes / 60);
+      if (hours > 0) {
+        return `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+      }
+      return `${minutes}:${seconds}`;
+    }
+
+    function setBriefingTimerText(message) {
+      if (briefingTimer instanceof HTMLElement) {
+        briefingTimer.textContent = message;
+      }
+    }
+
+    function stopBriefingTimer(startedAt, prefix) {
+      if (briefingTimerHandle) {
+        window.clearInterval(briefingTimerHandle);
+        briefingTimerHandle = null;
+      }
+      setBriefingTimerText(`${prefix} ${formatElapsedTime(Date.now() - startedAt)}`);
+    }
+
+    function setNewsSummaryTimerText(message) {
+      if (newsSummaryTimer instanceof HTMLElement) {
+        newsSummaryTimer.textContent = message;
+      }
+    }
+
+    function stopNewsSummaryTimer(startedAt, prefix) {
+      if (newsSummaryTimerHandle) {
+        window.clearInterval(newsSummaryTimerHandle);
+        newsSummaryTimerHandle = null;
+      }
+      setNewsSummaryTimerText(`${prefix} ${formatElapsedTime(Date.now() - startedAt)}`);
+    }
+
+    function downloadNewsSummaryText() {
+      if (!(newsSummaryText instanceof HTMLTextAreaElement)) {
+        return;
+      }
+      const text = newsSummaryText.value || '';
+      if (!text.trim()) {
+        setFeedback('暂无可下载的新闻总结。');
+        return;
+      }
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = latestNewsSummaryFilename || `news_summary_${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 500);
+    }
+
+    function submitArticleForm(message) {
+      if (!(articleForm instanceof HTMLFormElement)) {
+        return;
+      }
+      if (keywordSubmitTimer) {
+        window.clearTimeout(keywordSubmitTimer);
+        keywordSubmitTimer = null;
+      }
+      setFeedback(message);
+      articleForm.requestSubmit();
+    }
+
+    if (articleForm instanceof HTMLFormElement) {
+      articleForm.addEventListener('submit', () => {
+        setFeedback('正在刷新新闻列表...');
+      });
+    }
+
+    if (sourceSelect instanceof HTMLSelectElement && articleForm instanceof HTMLFormElement) {
+      sourceSelect.addEventListener('change', () => {
+        resetArticleBrowserFilters();
+        submitArticleForm('已切换数据文件，正在刷新新闻列表...');
+      });
+    }
+    if (platformSelect instanceof HTMLSelectElement && articleForm instanceof HTMLFormElement) {
+      platformSelect.addEventListener('change', () => {
+        submitArticleForm(platformSelect.value ? '正在按平台筛选新闻...' : '正在恢复显示全部平台新闻...');
+      });
+    }
+    if (limitSelect instanceof HTMLSelectElement && articleForm instanceof HTMLFormElement) {
+      limitSelect.addEventListener('change', () => {
+        submitArticleForm('正在刷新显示条数...');
+      });
+    }
+    if (keywordInput instanceof HTMLInputElement && articleForm instanceof HTMLFormElement) {
+      keywordInput.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') {
+          return;
+        }
+        event.preventDefault();
+        submitArticleForm('正在按关键词筛选新闻...');
+      });
+      keywordInput.addEventListener('input', () => {
+        if (keywordSubmitTimer) {
+          window.clearTimeout(keywordSubmitTimer);
+        }
+        keywordSubmitTimer = window.setTimeout(() => {
+          submitArticleForm(keywordInput.value.trim() ? '正在按关键词筛选新闻...' : '关键词已清空，正在恢复新闻列表...');
+        }, 400);
+      });
+    }
+    if (starredFilter instanceof HTMLSelectElement && articleForm instanceof HTMLFormElement) {
+      starredFilter.addEventListener('change', () => {
+        if (starredFilter.value === 'starred') {
+          submitArticleForm('正在切换为仅看🌟新闻...');
+        } else if (starredFilter.value === 'unstarred') {
+          submitArticleForm('正在切换为仅看未🌟新闻...');
+        } else {
+          submitArticleForm('正在恢复显示全部新闻...');
+        }
+      });
+    }
+    if (briefingButton instanceof HTMLButtonElement && articleForm instanceof HTMLFormElement) {
+      briefingButton.addEventListener('click', async () => {
+        if (briefingButton.disabled) {
+          return;
+        }
+        briefingButton.disabled = true;
+        briefingButton.classList.add('is-pending');
+        const originalText = briefingButton.textContent || '生成资讯表';
+        const startedAt = Date.now();
+        let briefingSucceeded = false;
+        if (briefingTimerHandle) {
+          window.clearInterval(briefingTimerHandle);
+          briefingTimerHandle = null;
+        }
+        setBriefingTimerText('生成中 00:00');
+        briefingTimerHandle = window.setInterval(() => {
+          setBriefingTimerText(`生成中 ${formatElapsedTime(Date.now() - startedAt)}`);
+        }, 1000);
+        briefingButton.textContent = '生成中...';
+        setFeedback('正在调用 AI 生成资讯表，当前筛选命中的全部新闻都会写入 Excel...');
+        try {
+          const response = await fetch('/api/articles/briefing-table', {
+            method: 'POST',
+            body: new FormData(articleForm),
+          });
+          if (!response.ok) {
+            throw new Error(await readDownloadError(response));
+          }
+          const blob = await response.blob();
+          const filename = filenameFromDisposition(
+            response.headers.get('Content-Disposition'),
+            `briefing_table_${new Date().toISOString().slice(0, 10)}.xlsx`,
+          );
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(blobUrl), 500);
+          briefingSucceeded = true;
+          const failedRows = Number.parseInt(response.headers.get('X-Briefing-AI-Failed-Row-Count') || '0', 10);
+          const failedBatches = Number.parseInt(response.headers.get('X-Briefing-AI-Failed-Batch-Count') || '0', 10);
+          if (failedRows > 0) {
+            setFeedback(`资讯表已生成，但有 ${failedRows} 条新闻因 AI 生成失败使用默认值，需人工复核。${failedBatches > 0 ? `失败批次：${failedBatches}` : ''}`);
+          } else {
+            setFeedback('资讯表已生成。');
+          }
+        } catch (error) {
+          setFeedback(error instanceof Error ? error.message : '生成资讯表失败');
+        } finally {
+          stopBriefingTimer(startedAt, briefingSucceeded ? '用时' : '失败，用时');
+          briefingButton.disabled = false;
+          briefingButton.classList.remove('is-pending');
+          briefingButton.textContent = originalText;
+        }
+      });
+    }
+    if (newsSummaryButton instanceof HTMLButtonElement && articleForm instanceof HTMLFormElement) {
+      newsSummaryButton.addEventListener('click', async () => {
+        if (newsSummaryButton.disabled) {
+          return;
+        }
+        newsSummaryButton.disabled = true;
+        newsSummaryButton.classList.add('is-pending');
+        const originalText = newsSummaryButton.textContent || '生成新闻总结';
+        const startedAt = Date.now();
+        let summarySucceeded = false;
+        if (newsSummaryTimerHandle) {
+          window.clearInterval(newsSummaryTimerHandle);
+          newsSummaryTimerHandle = null;
+        }
+        setNewsSummaryTimerText('生成中 00:00');
+        newsSummaryTimerHandle = window.setInterval(() => {
+          setNewsSummaryTimerText(`生成中 ${formatElapsedTime(Date.now() - startedAt)}`);
+        }, 1000);
+        newsSummaryButton.textContent = '生成中...';
+        setFeedback('正在调用 AI 生成客户汇报口径的新闻总结...');
+        try {
+          const response = await fetch('/api/articles/news-summary', {
+            method: 'POST',
+            body: new FormData(articleForm),
+          });
+          const rawText = await response.text();
+          let payload = {};
+          try {
+            payload = rawText ? JSON.parse(rawText) : {};
+          } catch (error) {
+            throw new Error(rawText ? rawText.slice(0, 500) : `请求失败：${response.status}`);
+          }
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '生成新闻总结失败');
+          }
+          if (newsSummaryText instanceof HTMLTextAreaElement) {
+            newsSummaryText.value = payload.text || '';
+          }
+          latestNewsSummaryFilename = payload.filename || '';
+          if (newsSummaryPanel instanceof HTMLElement) {
+            newsSummaryPanel.classList.remove('hidden');
+          }
+          if (newsSummaryMeta instanceof HTMLElement) {
+            const stats = payload.stats || {};
+            const failedRows = Number.parseInt(stats.failed_row_count || '0', 10);
+            newsSummaryMeta.textContent = failedRows > 0
+              ? `已生成，${failedRows} 条使用兜底摘要，需人工复核。`
+              : `已生成 ${payload.matching_rows || 0} 条新闻总结。`;
+          }
+          const stats = payload.stats || {};
+          const failedRows = Number.parseInt(stats.failed_row_count || '0', 10);
+          const failedBatches = Number.parseInt(stats.failed_batch_count || '0', 10);
+          if (failedRows > 0) {
+            setFeedback(`新闻总结已生成，但有 ${failedRows} 条新闻因 AI 生成失败使用兜底摘要，需人工复核。失败批次：${failedBatches}`);
+          } else {
+            setFeedback('新闻总结已生成。');
+          }
+          summarySucceeded = true;
+        } catch (error) {
+          setFeedback(error instanceof Error ? error.message : '生成新闻总结失败');
+        } finally {
+          stopNewsSummaryTimer(startedAt, summarySucceeded ? '用时' : '失败，用时');
+          newsSummaryButton.disabled = false;
+          newsSummaryButton.classList.remove('is-pending');
+          newsSummaryButton.textContent = originalText;
+        }
+      });
+    }
+    if (newsSummaryCopyButton instanceof HTMLButtonElement) {
+      newsSummaryCopyButton.addEventListener('click', async () => {
+        if (!(newsSummaryText instanceof HTMLTextAreaElement) || !newsSummaryText.value.trim()) {
+          setFeedback('暂无可复制的新闻总结。');
+          return;
+        }
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(newsSummaryText.value);
+          } else {
+            newsSummaryText.focus();
+            newsSummaryText.select();
+            document.execCommand('copy');
+          }
+          setFeedback('新闻总结已复制。');
+        } catch (error) {
+          setFeedback('复制失败，请手动选中文本复制。');
+        }
+      });
+    }
+    if (newsSummaryDownloadButton instanceof HTMLButtonElement) {
+      newsSummaryDownloadButton.addEventListener('click', () => {
+        downloadNewsSummaryText();
+        setFeedback('新闻总结 TXT 已开始下载。');
+      });
+    }
+    if (manualArticleReset instanceof HTMLButtonElement) {
+      manualArticleReset.addEventListener('click', () => {
+        resetManualArticleForm();
+        setFeedback('已清空手动新闻表单。');
+      });
+    }
+    if (manualArticleAiFill instanceof HTMLButtonElement && manualArticleForm instanceof HTMLFormElement) {
+      manualArticleAiFill.addEventListener('click', async () => {
+        const selectedSource = currentArticleSource();
+        if (!selectedSource.startsWith('db:') || !selectedSource.endsWith(':after')) {
+          setFeedback('请选择 SQLite 的 after 数据源后再使用 AI 自动填写。');
+          return;
+        }
+        const formData = new FormData(manualArticleForm);
+        const articleUrl = String(formData.get('article_url') || '').trim();
+        if (!articleUrl) {
+          setFeedback('请先输入新闻 URL。');
+          return;
+        }
+        formData.append('country_code', CURRENT_COUNTRY_CODE);
+        formData.append('article_source', selectedSource);
+        formData.append('platform_hint', String(formData.get('platform_label') || ''));
+        manualArticleAiFill.disabled = true;
+        setFeedback('AI 正在读取 URL 并填写手动新闻表单...');
+        try {
+          const response = await fetch('/api/articles/manual/suggest', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || 'AI 自动填写失败');
+          }
+          fillManualArticleForm(payload.dataset || {});
+          setFeedback('AI 已填写手动新闻表单，请检查后点击保存。');
+        } catch (error) {
+          setFeedback(error instanceof Error ? error.message : 'AI 自动填写失败');
+        } finally {
+          manualArticleAiFill.disabled = false;
+        }
+      });
+    }
+    if (manualArticleForm instanceof HTMLFormElement && articleForm instanceof HTMLFormElement) {
+      manualArticleForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const selectedSource = currentArticleSource();
+        if (!selectedSource.startsWith('db:') || !selectedSource.endsWith(':after')) {
+          setFeedback('请先选择 SQLite 的 after 数据源，再手动添加新闻。CSV 历史文件不会被直接修改。');
+          return;
+        }
+        const saveButton = document.getElementById('manual-article-save');
+        if (saveButton instanceof HTMLButtonElement) {
+          saveButton.disabled = true;
+          saveButton.classList.add('is-pending');
+        }
+        try {
+          const formData = new FormData(manualArticleForm);
+          formData.append('country_code', CURRENT_COUNTRY_CODE);
+          formData.append('article_source', selectedSource);
+          const response = await fetch('/api/articles/manual', {
+            method: 'POST',
+            body: formData,
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || '保存手动新闻失败');
+          }
+          setFeedback(payload.updated_existing ? '手动新闻已更新，正在刷新列表...' : '手动新闻已添加，正在刷新列表...');
+          resetManualArticleForm();
+          window.setTimeout(() => articleForm.requestSubmit(), 150);
+        } catch (error) {
+          setFeedback(error instanceof Error ? error.message : '保存手动新闻失败');
+        } finally {
+          if (saveButton instanceof HTMLButtonElement) {
+            saveButton.disabled = false;
+            saveButton.classList.remove('is-pending');
+          }
+        }
+      });
+    }
+    if (!(refreshButton instanceof HTMLButtonElement)) {
+      return;
+    }
+    refreshButton.addEventListener('click', async () => {
+      if (refreshButton.disabled) {
+        return;
+      }
+      refreshButton.disabled = true;
+      refreshButton.classList.add('is-pending');
+      refreshButton.textContent = '刷新中...';
+      setFeedback('正在刷新数据文件列表...');
+      try {
+        await refreshArticleSourceOptions(true);
+        resetArticleBrowserFilters();
+        setFeedback('数据文件列表已刷新，正在载入最新文件...');
+        refreshButton.textContent = '已刷新';
+        if (articleForm instanceof HTMLFormElement) {
+          saveArticleBrowserScrollState();
+          articleForm.requestSubmit();
+        }
+      } catch (error) {
+        setFeedback('刷新数据文件失败，请稍后重试。');
+        refreshButton.textContent = '刷新失败';
+      } finally {
+        window.setTimeout(() => {
+          refreshButton.disabled = false;
+          refreshButton.classList.remove('is-pending');
+          refreshButton.textContent = '刷新数据文件';
+        }, 700);
+      }
+    });
+
+    if (articleSection instanceof HTMLElement) {
+      articleSection.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+        const button = target.closest('.js-article-star-toggle');
+        if (!(button instanceof HTMLButtonElement)) {
+          const editButton = target.closest('.js-manual-article-edit');
+          if (editButton instanceof HTMLButtonElement) {
+            fillManualArticleForm(editButton.dataset);
+            setFeedback('已载入手动新闻，可修改后再次保存。');
+            return;
+          }
+          const disableButton = target.closest('.js-manual-article-disable');
+          if (disableButton instanceof HTMLButtonElement) {
+            const manualArticleId = disableButton.dataset.manualArticleId || '';
+            if (!manualArticleId || !window.confirm('确认从当前新闻库移除这条手动新闻吗？')) {
+              return;
+            }
+            disableButton.disabled = true;
+            try {
+              const response = await fetch(`/api/articles/manual/${encodeURIComponent(manualArticleId)}/disable`, {
+                method: 'POST',
+              });
+              const payload = await response.json();
+              if (!response.ok || !payload.ok) {
+                throw new Error(payload.error || '移除手动新闻失败');
+              }
+              setFeedback('手动新闻已移除，正在刷新列表...');
+              if (articleForm instanceof HTMLFormElement) {
+                window.setTimeout(() => articleForm.requestSubmit(), 150);
+              }
+            } catch (error) {
+              setFeedback(error instanceof Error ? error.message : '移除手动新闻失败');
+            } finally {
+              disableButton.disabled = false;
+            }
+            return;
+          }
+          return;
+        }
+
+        const articleId = button.dataset.articleId || '';
+        if (!articleId || button.disabled) {
+          return;
+        }
+
+        const nextStarred = button.dataset.starred !== '1';
+        button.disabled = true;
+        button.textContent = '...';
+
+        try {
+          const response = await fetch('/api/article-stars', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              article_id: articleId,
+              starred: nextStarred,
+              title: button.dataset.title || '',
+              article_url: button.dataset.articleUrl || '',
+            }),
+          });
+          const payload = await response.json();
+          if (!response.ok) {
+            throw new Error(payload.error || '保存星标失败');
+          }
+
+          button.dataset.starred = nextStarred ? '1' : '0';
+          button.textContent = '🌟';
+          button.classList.toggle('is-starred', nextStarred);
+
+          const card = button.closest('.article-card');
+          if (card instanceof HTMLElement) {
+            card.classList.toggle('is-starred', nextStarred);
+            let starredChip = card.querySelector('.article-chip.starred');
+            if (nextStarred && !starredChip) {
+              const meta = card.querySelector('.article-meta');
+              if (meta instanceof HTMLElement) {
+                starredChip = document.createElement('span');
+                starredChip.className = 'article-chip starred';
+                starredChip.textContent = '🌟';
+                meta.insertBefore(starredChip, meta.firstChild);
+              }
+            }
+            if (!nextStarred && starredChip instanceof HTMLElement) {
+              starredChip.remove();
+            }
+          }
+
+          setFeedback(nextStarred ? '已加入星标，可用“仅看星标”手动筛选新闻。' : '已取消星标。');
+
+          const starredFilter = document.getElementById('article-starred-filter');
+          if (starredFilter instanceof HTMLSelectElement && starredFilter.value === 'starred' && !nextStarred && articleForm instanceof HTMLFormElement) {
+            window.setTimeout(() => {
+              articleForm.requestSubmit();
+            }, 150);
+          }
+          if (starredFilter instanceof HTMLSelectElement && starredFilter.value === 'unstarred' && nextStarred && articleForm instanceof HTMLFormElement) {
+            window.setTimeout(() => {
+              articleForm.requestSubmit();
+            }, 150);
+          }
+        } catch (error) {
+          button.textContent = '🌟';
+          setFeedback(error instanceof Error ? error.message : '保存星标失败');
+        } finally {
+          button.disabled = false;
+        }
+      });
+    }
+  })();
+
+  function renderJobFailure(target, message) {
+    const isSource = target === 'sources';
+    const resultContainer = document.getElementById(isSource ? 'source-result-content' : 'news-result-content');
+    if (resultContainer) {
+      resultContainer.innerHTML = `<div class="pill bad">启动失败</div><div class="result">${escapeHtml(message)}</div>`;
+    }
+  }
+
+  function setProgressUI(target, payload) {
+    const prefix = target === 'sources' ? 'source' : 'news';
+    const progressPanel = document.getElementById(`${prefix}-progress-panel`);
+    const progressStage = document.getElementById(`${prefix}-progress-stage`);
+    const progressPercent = document.getElementById(`${prefix}-progress-percent`);
+    const progressFill = document.getElementById(`${prefix}-progress-fill`);
+    const currentSite = document.getElementById(`${prefix}-current-site`);
+    const lastCompletedSite = document.getElementById(`${prefix}-last-completed-site`);
+    const selectedPlatforms = document.getElementById(`${prefix}-selected-platforms`);
+    const totalSites = document.getElementById(`${prefix}-total-sites`);
+    const completedSites = document.getElementById(`${prefix}-completed-sites`);
+    const activeSites = document.getElementById(`${prefix}-active-sites`);
+    const elapsed = document.getElementById(`${prefix}-elapsed`);
+    const remaining = document.getElementById(`${prefix}-remaining`);
+    const resultContent = document.getElementById(`${prefix}-result-content`);
+
+    if (progressPanel) {
+      progressPanel.classList.remove('hidden');
+    }
+    if (resultContent) {
+      resultContent.innerHTML = '';
+    }
+    if (progressStage) {
+      progressStage.textContent = payload.progress_label || '正在执行任务…';
+    }
+    if (progressPercent) {
+      progressPercent.textContent = `${payload.progress_percent || 0}%`;
+    }
+    if (progressFill) {
+      progressFill.style.width = `${payload.progress_percent || 0}%`;
+    }
+    if (currentSite) {
+      currentSite.textContent = `当前状态：${payload.current_site || '等待分配网站任务'}`;
+    }
+    if (lastCompletedSite) {
+      lastCompletedSite.textContent = `最近完成：${payload.last_completed_site || '暂无'}`;
+    }
+    if (selectedPlatforms) {
+      selectedPlatforms.textContent = String(payload.selected_platform_count ?? 0);
+    }
+    if (totalSites) {
+      totalSites.textContent = String(payload.total_sites ?? 0);
+    }
+    if (completedSites) {
+      completedSites.textContent = String(payload.completed_sites ?? 0);
+    }
+    if (activeSites) {
+      activeSites.textContent = String(payload.active_sites ?? 0);
+    }
+    if (elapsed) {
+      elapsed.textContent = formatSeconds(payload.elapsed_seconds);
+    }
+    if (remaining) {
+      remaining.textContent = formatSeconds(payload.remaining_seconds);
+    }
+  }
+
+  function renderJobResult(target, payload) {
+    if (target === 'news' && Number(payload.exit_code ?? 1) === 0) {
+      refreshArticleSourceOptions(true);
+      sourceRecordCardsLoaded = false;
+      refreshSourceRecordCards(true);
+    }
+    if (target === 'sources' && Number(payload.exit_code ?? 1) === 0) {
+      sourceRecordCardsLoaded = false;
+      refreshSourceRecordCards(true);
+    }
+    const prefix = target === 'sources' ? 'source' : 'news';
+    const progressPanel = document.getElementById(`${prefix}-progress-panel`);
+    const resultContent = document.getElementById(`${prefix}-result-content`);
+
+    if (progressPanel) {
+      progressPanel.classList.add('hidden');
+    }
+    if (!resultContent) {
+      return;
+    }
+    const exitCode = Number(payload.exit_code ?? 1);
+    const pillClass = exitCode === 0 ? 'ok' : 'bad';
+    const argv = Array.isArray(payload.argv) ? payload.argv.join(' ') : '';
+    const output = payload.output || '无输出';
+    resultContent.innerHTML = `
+      <div class="pill ${pillClass}">退出码：${exitCode}</div>
+      <div class="hint">参数：${argv}</div>
+      <div class="result">${output}</div>
+    `;
+  }
+
+  function startJobPolling(target, payload, button) {
+    const jobId = payload.job_id;
+    if (!jobId) {
+      renderJobFailure(target, '没有收到任务编号');
+      if (button) {
+        button.disabled = false;
+        button.textContent = button.dataset.defaultLabel || '提交';
+      }
+      return;
+    }
+
+    rememberActiveJob(target, jobId);
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = '运行中…';
+    }
+
+    if (activeJobControllers[target]) {
+      clearInterval(activeJobControllers[target]);
+    }
+
+    setProgressUI(target, payload);
+
+    activeJobControllers[target] = window.setInterval(async () => {
+      try {
+        const response = await fetch(`/api/jobs/${jobId}`);
+        const statusPayload = await parseJsonResponse(response, `/api/jobs/${jobId}`);
+        if (!response.ok) {
+          throw new Error(buildApiErrorMessage(statusPayload, '无法读取任务状态'));
+        }
+
+        if (statusPayload.status === 'completed') {
+          clearInterval(activeJobControllers[target]);
+          delete activeJobControllers[target];
+          forgetActiveJob(target);
+          renderJobResult(target, statusPayload);
+          if (button) {
+            button.disabled = false;
+            button.textContent = button.dataset.defaultLabel || '提交';
+          }
+          return;
+        }
+
+        setProgressUI(target, statusPayload);
+      } catch (error) {
+        clearInterval(activeJobControllers[target]);
+        delete activeJobControllers[target];
+        forgetActiveJob(target);
+        if (button) {
+          button.disabled = false;
+          button.textContent = button.dataset.defaultLabel || '提交';
+        }
+        renderJobFailure(target, error instanceof Error ? error.message : '读取进度失败');
+      }
+    }, 1000);
+  }
+
+  async function resumeActiveJobs() {
+    const jobs = loadStoredJobs();
+    const entries = Object.entries(jobs);
+    for (const [target, jobId] of entries) {
+      const button = findSubmitButton(target);
+      if (button instanceof HTMLButtonElement) {
+        button.disabled = true;
+        button.textContent = '运行中…';
+      }
+
+      try {
+        const response = await fetch(`/api/jobs/${jobId}`);
+        const payload = await parseJsonResponse(response, `/api/jobs/${jobId}`);
+        if (!response.ok) {
+          throw new Error(buildApiErrorMessage(payload, '无法恢复任务状态'));
+        }
+
+        if (payload.status === 'completed') {
+          forgetActiveJob(target);
+          renderJobResult(target, payload);
+          if (button instanceof HTMLButtonElement) {
+            button.disabled = false;
+            button.textContent = button.dataset.defaultLabel || '提交';
+          }
+          continue;
+        }
+
+        startJobPolling(target, payload, button instanceof HTMLButtonElement ? button : null);
+      } catch (error) {
+        forgetActiveJob(target);
+        if (button instanceof HTMLButtonElement) {
+          button.disabled = false;
+          button.textContent = button.dataset.defaultLabel || '提交';
+        }
+      }
+    }
+  }
+
+  resumeActiveJobs();
+</script>
+</html>

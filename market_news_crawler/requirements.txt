@@ -1,0 +1,8 @@
+beautifulsoup4
+deep-translator
+lxml
+openpyxl
+python-dateutil
+requests
+tzdata
+flask
