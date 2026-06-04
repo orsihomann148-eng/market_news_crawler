@@ -420,6 +420,7 @@
     const clearAllArticlesButton = document.getElementById('user-clear-all-articles');
     const selectedCountNode = document.getElementById('user-selected-count');
     const initialApiConfigured = {{ 'true' if ai_configured else 'false' }};
+    const lastRunSuccessTimeKey = 'marketNewsCrawlerUserLastRunSuccessTime';
     let latestSummaryFilename = '';
     let userApiConfigured = initialApiConfigured;
 
@@ -442,6 +443,21 @@
       const remaining = remainingValue === null || remainingValue === undefined ? '计算中' : formatSeconds(remainingValue);
       const text = `${prefix ? `${prefix} ` : ''}已运行 ${elapsed} · 预计剩余 ${remaining}`;
       setText(jobTime, text);
+    }
+
+    function setJobFinishedTime(payload, success) {
+      const elapsed = formatSeconds(payload && payload.elapsed_seconds);
+      const text = success ? `抓取成功，用时 ${elapsed}` : `抓取失败，用时 ${elapsed}`;
+      setText(jobTime, text);
+      return text;
+    }
+
+    function restoreLastRunSuccessTime() {
+      if (!jobTime || !window.sessionStorage) return;
+      const text = window.sessionStorage.getItem(lastRunSuccessTimeKey);
+      if (!text) return;
+      setText(jobTime, text);
+      window.sessionStorage.removeItem(lastRunSuccessTimeKey);
     }
 
     function cleanUserProgressLabel(label) {
@@ -640,13 +656,16 @@
       setText(jobLabel, `${progressLabel} · ${percent}%`);
       if (payload.status === 'completed') {
         if (Number(payload.exit_code || 0) === 0) {
-          setJobTime(payload, '完成');
+          const finishText = setJobFinishedTime(payload, true);
+          if (window.sessionStorage) {
+            window.sessionStorage.setItem(lastRunSuccessTimeKey, finishText);
+          }
           setText(runFeedback, '抓取完成，正在刷新最新结果...');
           window.setTimeout(() => {
             window.location.href = `/?country_code=${encodeURIComponent(payload.country_code || '')}`;
           }, 900);
         } else {
-          setJobTime(payload, '失败');
+          setJobFinishedTime(payload, false);
           setText(runFeedback, '抓取结束但出现错误，请在开发者模式查看日志。');
         }
         if (runButton) runButton.disabled = false;
@@ -769,6 +788,9 @@
         syncApiHiddenInputs();
         if (runButton) runButton.disabled = true;
         if (jobPanel) jobPanel.classList.remove('hidden');
+        if (window.sessionStorage) {
+          window.sessionStorage.removeItem(lastRunSuccessTimeKey);
+        }
         setText(jobTime, '已运行 00:00 · 预计剩余 计算中');
         setText(runFeedback, '正在创建抓取任务...');
         try {
@@ -783,6 +805,8 @@
         }
       });
     }
+
+    restoreLastRunSuccessTime();
 
     if (userManualReset) {
       userManualReset.addEventListener('click', () => {
