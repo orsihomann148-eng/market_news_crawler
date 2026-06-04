@@ -8,10 +8,11 @@ from pathlib import Path
 from typing import Any
 
 import xlsx_source_test
+import runtime_paths
 
 
 BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = BASE_DIR / 'outputs'
+OUTPUT_DIR = runtime_paths.outputs_dir()
 NEWS_SUMMARY_OUTPUT_DIR = OUTPUT_DIR / 'generated_news_summaries'
 
 PLATFORM_ORDER = ['行业', 'Amazon', 'SHEIN', 'TEMU', 'TTS', 'eBay', 'IG']

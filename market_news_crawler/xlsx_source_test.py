@@ -28,6 +28,7 @@ from openpyxl import load_workbook
 import dedupe as dedupe_utils
 import db_store
 import output_writer
+import runtime_paths
 import survey_filter as survey_filter_utils
 from country_config import (
     DEFAULT_COUNTRY_CODE,
@@ -634,7 +635,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--start-date", help="起始日期，格式 YYYY-MM-DD。")
     parser.add_argument("--end-date", help="结束日期，格式 YYYY-MM-DD。默认是当前时间。")
     parser.add_argument("--timezone", default="", help="时区；留空则使用国家默认时区")
-    parser.add_argument("--output-dir", default="outputs", help="输出目录")
+    parser.add_argument("--output-dir", default=str(runtime_paths.outputs_dir()), help="输出目录")
     parser.add_argument("--extra-sources", default="", help="额外来源配置 JSON；留空则使用国家子目录中的默认文件")
     parser.add_argument("--adapter-configs", default="", help="站点适配配置 JSON；留空则使用国家子目录中的默认文件")
     parser.add_argument("--site-credentials", default="", help="站点账号/凭据配置 JSON；留空则使用国家子目录中的默认文件")
@@ -687,11 +688,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     args = parser.parse_args(argv)
     args.country = normalize_country_code(getattr(args, "country", DEFAULT_COUNTRY_CODE))
     country_config = get_country_config(args.country)
-    args.xlsx = clean_text(getattr(args, "xlsx", "")) or str(country_config["xlsx_path"])
+    args.xlsx = clean_text(getattr(args, "xlsx", "")) or str(runtime_paths.runtime_project_path(str(country_config["xlsx_path"]), copy_from_template=True))
     args.timezone = clean_text(getattr(args, "timezone", "")) or str(country_config["timezone"])
-    args.extra_sources = clean_text(getattr(args, "extra_sources", "")) or str(country_config["extra_sources_path"])
-    args.adapter_configs = clean_text(getattr(args, "adapter_configs", "")) or str(country_config["adapter_configs_path"])
-    args.site_credentials = clean_text(getattr(args, "site_credentials", "")) or str(country_config["site_credentials_path"])
+    args.extra_sources = clean_text(getattr(args, "extra_sources", "")) or str(runtime_paths.runtime_project_path(str(country_config["extra_sources_path"]), copy_from_template=True))
+    args.adapter_configs = clean_text(getattr(args, "adapter_configs", "")) or str(runtime_paths.runtime_project_path(str(country_config["adapter_configs_path"]), copy_from_template=True))
+    args.site_credentials = clean_text(getattr(args, "site_credentials", "")) or str(runtime_paths.runtime_project_path(str(country_config["site_credentials_path"]), copy_from_template=True))
     if bool(getattr(args, "promo_search", False)) and not bool(getattr(args, "search_related_news", False)) and not bool(getattr(args, "search_report_ranking", False)):
         args.search_related_news = True
         args.search_report_ranking = True

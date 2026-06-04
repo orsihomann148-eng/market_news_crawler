@@ -33,6 +33,7 @@ from openpyxl import load_workbook
 import article_browser as article_browser_utils
 import briefing_table as briefing_table_utils
 import news_summary as news_summary_utils
+import runtime_paths
 import web_settings as web_settings_utils
 import dedupe
 import db_store
@@ -57,16 +58,16 @@ import source_manager
 import xlsx_source_test
 
 BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = BASE_DIR / 'outputs'
+OUTPUT_DIR = runtime_paths.outputs_dir()
 RUNTIME_OUTPUT_DIR = Path.cwd() / 'outputs'
 LEGACY_WORKSPACE_OUTPUT_DIR = BASE_DIR.parents[2] / 'outputs' if len(BASE_DIR.parents) > 2 else RUNTIME_OUTPUT_DIR
 DEFAULT_COUNTRY_FILE_PATHS = default_country_file_paths(DEFAULT_COUNTRY_CODE)
 DEFAULT_EXTRA_SOURCES_PATH = DEFAULT_COUNTRY_FILE_PATHS['extra_sources_path']
 DEFAULT_ARTICLES_CSV_PATH = BASE_DIR / 'articles.csv'
-APP_SETTINGS_PATH = BASE_DIR / 'web_app_settings.json'
-ARTICLE_STAR_STORE_PATH = BASE_DIR / 'article_star_store.json'
+APP_SETTINGS_PATH = runtime_paths.app_settings_path()
+ARTICLE_STAR_STORE_PATH = runtime_paths.article_star_store_path()
 SOURCE_CAPABILITY_CACHE_PATH = BASE_DIR / DEFAULT_COUNTRY_FILE_PATHS['source_capability_cache_path']
-JOB_TIMING_HISTORY_PATH = BASE_DIR / 'job_timing_history.json'
+JOB_TIMING_HISTORY_PATH = runtime_paths.job_timing_history_path()
 BRIEFING_TABLE_TEMPLATE_FILENAME = '生成资讯表.xlsx'
 BRIEFING_TABLE_OUTPUT_DIR = OUTPUT_DIR / 'generated_briefing_tables'
 NEWS_SUMMARY_OUTPUT_DIR = OUTPUT_DIR / 'generated_news_summaries'
@@ -119,6 +120,21 @@ APP_SECRET_PATH = web_settings_utils.APP_SECRET_PATH
 def _sync_web_settings_paths() -> None:
     web_settings_utils.APP_SETTINGS_PATH = APP_SETTINGS_PATH
     web_settings_utils.APP_SECRET_PATH = APP_SECRET_PATH
+
+
+def _sync_runtime_paths() -> None:
+    _sync_web_settings_paths()
+    db_store.DEFAULT_DB_PATH = runtime_paths.sqlite_db_path()
+    article_browser_utils.OUTPUT_DIR = OUTPUT_DIR
+    article_browser_utils.RUNTIME_OUTPUT_DIR = runtime_paths.outputs_dir()
+    article_browser_utils.ARTICLE_STAR_STORE_PATH = ARTICLE_STAR_STORE_PATH
+    briefing_table_utils.OUTPUT_DIR = OUTPUT_DIR
+    briefing_table_utils.BRIEFING_TABLE_OUTPUT_DIR = BRIEFING_TABLE_OUTPUT_DIR
+    news_summary_utils.OUTPUT_DIR = OUTPUT_DIR
+    news_summary_utils.NEWS_SUMMARY_OUTPUT_DIR = NEWS_SUMMARY_OUTPUT_DIR
+
+
+_sync_runtime_paths()
 
 
 AUTH_SESSION_KEY = 'market_news_authenticated'
@@ -1420,7 +1436,7 @@ def create_minimal_country_xlsx(path: Path) -> None:
 
 
 def ensure_country_xlsx_file(config: dict[str, Any]) -> None:
-    target_path = resolve_project_path(str(config['xlsx_path']), base_dir=BASE_DIR)
+    target_path = runtime_paths.runtime_project_path(str(config['xlsx_path']), copy_from_template=True)
     if target_path.exists():
         return
 
@@ -1454,7 +1470,7 @@ def ensure_country_support_files(config: dict[str, Any]) -> None:
         'source_capability_cache_path': {'version': 1, 'entries': {}},
     }
     for key, default_payload in initial_files.items():
-        path = resolve_project_path(str(config[key]), base_dir=BASE_DIR)
+        path = runtime_paths.runtime_project_path(str(config[key]), copy_from_template=True)
         if path.exists():
             continue
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -1475,7 +1491,7 @@ def cleanup_custom_country_generated_files(country_code: str, config: dict[str, 
         configured_name = str(config.get(key) or '').strip()
         if not configured_name or configured_name not in expected_names:
             continue
-        target_path = resolve_project_path(configured_name, base_dir=BASE_DIR)
+        target_path = runtime_paths.runtime_project_path(configured_name)
         if target_path.is_file():
             try:
                 target_path.unlink()
@@ -4833,7 +4849,7 @@ def api_article_stars():
 
 if __name__ == '__main__':
     install_terminal_signal_guards()
-    app.run(host='0.0.0.0', port=8000, debug=False, use_reloader=False)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT') or 8000), debug=False, use_reloader=False)
 
 
 

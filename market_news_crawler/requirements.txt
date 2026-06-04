@@ -6,3 +6,4 @@ python-dateutil
 requests
 tzdata
 flask
+gunicorn

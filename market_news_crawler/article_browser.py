@@ -14,6 +14,7 @@ from typing import Any
 import db_store
 import dedupe
 import news_crawler
+import runtime_paths
 import xlsx_source_test
 from country_config import (
     DEFAULT_COUNTRY_CODE,
@@ -24,11 +25,11 @@ from country_config import (
 
 
 BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = BASE_DIR / 'outputs'
+OUTPUT_DIR = runtime_paths.outputs_dir()
 RUNTIME_OUTPUT_DIR = Path.cwd() / 'outputs'
 LEGACY_WORKSPACE_OUTPUT_DIR = BASE_DIR.parents[2] / 'outputs' if len(BASE_DIR.parents) > 2 else RUNTIME_OUTPUT_DIR
 DEFAULT_ARTICLES_CSV_PATH = BASE_DIR / 'articles.csv'
-ARTICLE_STAR_STORE_PATH = BASE_DIR / 'article_star_store.json'
+ARTICLE_STAR_STORE_PATH = runtime_paths.article_star_store_path()
 
 
 def normalize_country_request(value: Any) -> str:
@@ -336,11 +337,7 @@ def is_db_article_source(value: str | None) -> bool:
 
 
 def resolve_output_dir_for_run(value: str | None) -> str:
-    normalized = normalize_project_relative_path(value or 'outputs') or 'outputs'
-    candidate = Path(normalized)
-    if candidate.is_absolute():
-        return str(candidate)
-    return str((BASE_DIR / normalized).resolve())
+    return str(runtime_paths.runtime_output_dir_for_user_value(value).resolve())
 
 
 def list_recent_output_dirs(limit: int = 10, *, country_code: str = DEFAULT_COUNTRY_CODE) -> list[dict[str, Any]]:

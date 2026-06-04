@@ -22,6 +22,7 @@ Git_sshkey*
 
 # Local application state
 market_news_crawler/web_app_settings.json
+market_news_crawler/web_app_secret.key
 market_news_crawler/news_crawler.db
 market_news_crawler/job_timing_history.json
 market_news_crawler/article_star_store.json

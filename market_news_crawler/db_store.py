@@ -7,9 +7,10 @@ import time
 from pathlib import Path
 from typing import Any
 
+import runtime_paths
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_DB_PATH = BASE_DIR / "news_crawler.db"
+DEFAULT_DB_PATH = runtime_paths.sqlite_db_path()
 SCHEMA_VERSION = 1
 STAR_JSON_MIGRATION_NAME = "article_star_store_json_migrated"
 

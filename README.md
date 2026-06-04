@@ -56,6 +56,90 @@ http://127.0.0.1:8000
 
 首次启动时，如果还没有管理员密码，页面会要求先设置密码。之后登录即可进入普通用户模式，右上角可以切换到开发者模式。
 
+## 零成本云端部署建议
+
+如果目标是长期零成本、数据重启后不丢失，推荐使用 **Oracle Cloud Always Free VM**，而不是 Vercel/Render 这类 Serverless 或免费 PaaS。原因是本项目目前依赖 Flask 常驻进程、SQLite、`outputs/` 文件和后台抓取线程，需要一块稳定的持久磁盘。
+
+### 生产环境变量
+
+云端建议至少配置：
+
+```bash
+MARKET_NEWS_DATA_DIR=/data/market_news_crawler
+SECRET_KEY=一段足够长的随机字符串
+PORT=8000
+```
+
+说明：
+
+- `MARKET_NEWS_DATA_DIR`：所有运行态数据都会写入这里，包括登录配置、AI API 配置、SQLite、outputs、任务耗时记录和可编辑来源配置。
+- `SECRET_KEY`：用于 Flask 会话和本地配置加密。云端建议固定设置，避免重启或换机器后无法解密已保存配置。
+- `PORT`：本地开发默认 8000；PaaS 通常会自动注入。
+
+### 生产启动命令
+
+项目已支持 gunicorn：
+
+```bash
+cd market_news_crawler
+gunicorn --workers 1 --threads 8 --timeout 600 --bind 0.0.0.0:${PORT:-8000} web_app:app
+```
+
+必须保持 `--workers 1`。当前抓取任务状态保存在 Web 进程内存里，多 worker 会导致进度轮询和后台任务状态分裂。
+
+### Oracle Always Free VM 部署步骤
+
+1. 创建一台 Ubuntu Always Free VM。
+2. 安装 Python、Git、Nginx 和可选的 Certbot。
+3. 拉取 GitHub 仓库到 `/opt/market_news_crawler/app`。
+4. 创建虚拟环境并安装依赖：
+
+   ```bash
+   cd /opt/market_news_crawler/app/market_news_crawler
+   python3 -m venv .venv
+   . .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+5. 创建持久目录：
+
+   ```bash
+   sudo mkdir -p /data/market_news_crawler
+   sudo chown -R $USER:$USER /data/market_news_crawler
+   ```
+
+6. 用 systemd 启动服务，环境变量示例：
+
+   ```ini
+   [Service]
+   WorkingDirectory=/opt/market_news_crawler/app/market_news_crawler
+   Environment=MARKET_NEWS_DATA_DIR=/data/market_news_crawler
+   Environment=SECRET_KEY=请替换成随机长字符串
+   Environment=PORT=8000
+   ExecStart=/opt/market_news_crawler/app/market_news_crawler/.venv/bin/gunicorn --workers 1 --threads 8 --timeout 600 --bind 127.0.0.1:8000 web_app:app
+   Restart=always
+   ```
+
+7. Nginx 反向代理到 `127.0.0.1:8000`。
+8. 首次访问云端 URL，设置管理员密码，再配置 AI API。
+9. 跑一次最近 7 天小样本，确认新闻查看、手动添加、资讯表和新闻总结可用。
+
+### 云端备份
+
+定期备份整个数据目录即可：
+
+```bash
+tar -czf market_news_backup_$(date +%Y%m%d).tar.gz /data/market_news_crawler
+```
+
+至少应包含：
+
+- `web_app_settings.json`
+- `news_crawler.db`
+- `outputs/`
+- `country_configs_custom.json`
+- `country_data/` 下的可编辑来源配置
+
 ## 普通用户使用流程
 
 1. 进入普通用户模式。

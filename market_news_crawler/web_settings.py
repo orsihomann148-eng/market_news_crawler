@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import xlsx_source_test
+import runtime_paths
 from country_config import (
     DEFAULT_COUNTRY_CODE,
     get_country_config,
@@ -21,7 +22,7 @@ from country_config import (
 
 
 BASE_DIR = Path(__file__).resolve().parent
-APP_SETTINGS_PATH = BASE_DIR / 'web_app_settings.json'
+APP_SETTINGS_PATH = runtime_paths.app_settings_path()
 SETTINGS_SECRET_PREFIX = 'enc-v1:'
 SURVEY_API_SETTING_FIELDS = ('survey_api_url', 'survey_api_key', 'survey_api_model')
 CONFIG_PREVIOUS_FIELD_MAP = {
@@ -32,6 +33,8 @@ CONFIG_PREVIOUS_FIELD_MAP = {
 
 
 def app_secret_dir() -> Path:
+    if runtime_paths.data_dir_enabled():
+        return runtime_paths.get_data_dir()
     if os.name == 'nt':
         root = Path(os.environ.get('APPDATA') or (Path.home() / 'AppData' / 'Roaming'))
         generic_dir = root / 'market_news_catch_auto'
@@ -47,7 +50,7 @@ def app_secret_dir() -> Path:
     return legacy_dir if legacy_dir.exists() else generic_dir
 
 
-APP_SECRET_PATH = app_secret_dir() / 'web_app_secret.key'
+APP_SECRET_PATH = runtime_paths.app_secret_path() if runtime_paths.data_dir_enabled() else app_secret_dir() / 'web_app_secret.key'
 
 
 def normalize_country_request(value: Any) -> str:
@@ -55,7 +58,7 @@ def normalize_country_request(value: Any) -> str:
 
 
 def country_path(country_code: str, key: str) -> Path:
-    return resolve_project_path(str(get_country_config(country_code)[key]), base_dir=BASE_DIR)
+    return runtime_paths.runtime_project_path(str(get_country_config(country_code)[key]), copy_from_template=True)
 
 
 def output_dir_matches_country(path: Path, country_code: str) -> bool:
@@ -95,6 +98,9 @@ def ensure_secret_file_permissions(path: Path) -> None:
 
 
 def load_or_create_app_secret() -> bytes:
+    env_secret = os.environ.get('SECRET_KEY') or os.environ.get('MARKET_NEWS_SECRET_KEY')
+    if str(env_secret or '').strip():
+        return hashlib.sha256(str(env_secret).encode('utf-8')).digest()
     if APP_SECRET_PATH.exists():
         try:
             secret = base64.urlsafe_b64decode(APP_SECRET_PATH.read_text(encoding='utf-8').strip().encode('ascii'))
@@ -246,6 +252,7 @@ def read_app_settings() -> dict[str, Any]:
 
 def write_app_settings(payload: dict[str, Any]) -> None:
     encrypted_payload = encrypt_settings_payload(payload)
+    APP_SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     APP_SETTINGS_PATH.write_text(json.dumps(encrypted_payload, ensure_ascii=False, indent=2), encoding='utf-8')
 
 

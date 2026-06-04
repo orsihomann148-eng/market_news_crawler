@@ -12,13 +12,14 @@ import requests
 from openpyxl import load_workbook
 
 import news_crawler
+import runtime_paths
 import xlsx_source_test
 from country_config import DEFAULT_COUNTRY_CODE, get_country_config, normalize_country_code
 
 
 BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = BASE_DIR / 'outputs'
-BRIEFING_TABLE_TEMPLATE_FILENAME = '?????.xlsx'
+OUTPUT_DIR = runtime_paths.outputs_dir()
+BRIEFING_TABLE_TEMPLATE_FILENAME = '生成资讯表.xlsx'
 BRIEFING_TABLE_OUTPUT_DIR = OUTPUT_DIR / 'generated_briefing_tables'
 
 

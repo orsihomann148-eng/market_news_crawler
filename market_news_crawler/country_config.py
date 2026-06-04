@@ -5,11 +5,13 @@ import re
 from pathlib import Path
 from typing import Any
 
+import runtime_paths
 
 DEFAULT_COUNTRY_CODE = "japan"
-CUSTOM_COUNTRY_CONFIG_PATH = Path(__file__).resolve().parent / "country_configs_custom.json"
-COUNTRY_DATA_DIRNAME = "country_data"
 PROJECT_ROOT = Path(__file__).resolve().parent
+CUSTOM_COUNTRY_CONFIG_PATH = runtime_paths.custom_country_config_path()
+runtime_paths.ensure_from_template(CUSTOM_COUNTRY_CONFIG_PATH, PROJECT_ROOT / "country_configs_custom.json")
+COUNTRY_DATA_DIRNAME = "country_data"
 
 
 def _normalize_country_token(value: str | None) -> str:
@@ -542,6 +544,7 @@ def save_custom_country_config(
     next_config["code"] = normalized_code
     existing[normalized_code] = next_config
 
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
             {
@@ -568,6 +571,7 @@ def save_country_config_patch(
     next_config.update(patch)
     next_config["code"] = normalized_code
     existing[normalized_code] = next_config
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
             {
@@ -596,6 +600,7 @@ def delete_custom_country_config(
     if not isinstance(removed, dict):
         raise ValueError(f"{normalized_code} 不是可删除的自定义国家。")
 
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
             {
