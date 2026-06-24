@@ -66,7 +66,6 @@
     .briefing-timer{align-self:center;min-width:92px;font-size:13px;color:var(--brand-dark)}
     .article-action-feedback{min-height:18px;font-size:12px;color:var(--brand-dark);margin-top:8px}
     .article-summary-panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
-    .article-summary-panel textarea{min-height:260px;line-height:1.65}
     .api-test-feedback{min-height:18px;font-size:12px;color:var(--brand-dark);margin-top:8px}
     .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
     .aside-stack{display:grid;gap:20px}
@@ -483,11 +482,12 @@
           <div class="article-action-feedback" id="article-action-feedback" aria-live="polite"></div>
           <div class="article-summary-panel hidden" id="article-news-summary-panel">
             <div class="inline-actions">
-              <button class="mini-btn" type="button" id="article-news-summary-copy">复制全文</button>
-              <button class="mini-btn save-action" type="button" id="article-news-summary-download">下载 TXT</button>
+              <button class="mini-btn" type="button" id="article-news-summary-copy-rich">复制富文本</button>
+              <button class="mini-btn save-action" type="button" id="article-news-summary-download-excel">下载 Excel</button>
+              <button class="mini-btn save-action" type="button" id="article-news-summary-download-html">下载 HTML</button>
               <span class="hint" id="article-news-summary-meta"></span>
             </div>
-            <textarea id="article-news-summary-text" rows="12" readonly placeholder="生成后的新闻总结会显示在这里，便于复制到客户汇报中。"></textarea>
+            <div class="article-summary" id="article-news-summary-html-preview" style="margin-top:12px;"></div>
           </div>
           <div id="article-results-anchor"></div>
           <div class="hint">当前数据文件</div>
@@ -2925,9 +2925,10 @@ http://127.0.0.1:8000</div>
     const newsSummaryButton = document.getElementById('article-news-summary-generate');
     const newsSummaryTimer = document.getElementById('article-news-summary-timer');
     const newsSummaryPanel = document.getElementById('article-news-summary-panel');
-    const newsSummaryText = document.getElementById('article-news-summary-text');
-    const newsSummaryCopyButton = document.getElementById('article-news-summary-copy');
-    const newsSummaryDownloadButton = document.getElementById('article-news-summary-download');
+    const newsSummaryCopyRichButton = document.getElementById('article-news-summary-copy-rich');
+    const newsSummaryDownloadExcelButton = document.getElementById('article-news-summary-download-excel');
+    const newsSummaryDownloadHtmlButton = document.getElementById('article-news-summary-download-html');
+    const newsSummaryHtmlPreview = document.getElementById('article-news-summary-html-preview');
     const newsSummaryMeta = document.getElementById('article-news-summary-meta');
     const feedback = document.getElementById('article-action-feedback');
     const manualArticlePanel = document.getElementById('manual-article-panel');
@@ -2938,6 +2939,10 @@ http://127.0.0.1:8000</div>
     let briefingTimerHandle = null;
     let newsSummaryTimerHandle = null;
     let latestNewsSummaryFilename = '';
+    let latestNewsSummaryExcelUrl = '';
+    let latestNewsSummaryHtml = '';
+    let latestNewsSummaryText = '';
+    let latestNewsSummaryHtmlUrl = '';
 
     function setFeedback(message) {
       if (feedback) {
@@ -3064,24 +3069,64 @@ http://127.0.0.1:8000</div>
       setNewsSummaryTimerText(`${prefix} ${formatElapsedTime(Date.now() - startedAt)}`);
     }
 
-    function downloadNewsSummaryText() {
-      if (!(newsSummaryText instanceof HTMLTextAreaElement)) {
+    function downloadNewsSummaryExcel() {
+      if (!latestNewsSummaryExcelUrl) {
+        setFeedback('暂无可下载的新闻总结 Excel，请先生成新闻总结。');
         return;
       }
-      const text = newsSummaryText.value || '';
-      if (!text.trim()) {
-        setFeedback('暂无可下载的新闻总结。');
-        return;
-      }
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-      const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = latestNewsSummaryFilename || `news_summary_${new Date().toISOString().slice(0, 10)}.txt`;
+      link.href = latestNewsSummaryExcelUrl;
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 500);
+    }
+
+    function downloadNewsSummaryHtml() {
+      if (!latestNewsSummaryHtmlUrl) {
+        setFeedback('暂无可下载的新闻总结 HTML，请先生成新闻总结。');
+        return;
+      }
+      const link = document.createElement('a');
+      link.href = latestNewsSummaryHtmlUrl;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    async function copyNewsSummaryRichText() {
+      if (!latestNewsSummaryHtml) {
+        if (latestNewsSummaryText.trim()) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(latestNewsSummaryText);
+          }
+          setFeedback('浏览器不支持富文本，已复制纯文本。');
+        } else {
+          setFeedback('暂无可复制的新闻总结。');
+        }
+        return;
+      }
+      try {
+        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': new Blob([latestNewsSummaryHtml], { type: 'text/html' }),
+              'text/plain': new Blob([latestNewsSummaryText], { type: 'text/plain' }),
+            }),
+          ]);
+          setFeedback('新闻总结富文本已复制。');
+          return;
+        }
+        throw new Error('rich clipboard unsupported');
+      } catch (error) {
+        if (latestNewsSummaryText.trim()) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(latestNewsSummaryText);
+          }
+          setFeedback('浏览器不支持富文本，已复制纯文本。');
+        } else {
+          setFeedback('复制失败，请手动复制。');
+        }
+      }
     }
 
     function submitArticleForm(message) {
@@ -3223,6 +3268,10 @@ http://127.0.0.1:8000</div>
         newsSummaryTimerHandle = window.setInterval(() => {
           setNewsSummaryTimerText(`生成中 ${formatElapsedTime(Date.now() - startedAt)}`);
         }, 1000);
+        latestNewsSummaryExcelUrl = '';
+        latestNewsSummaryHtml = '';
+        latestNewsSummaryText = '';
+        latestNewsSummaryHtmlUrl = '';
         newsSummaryButton.textContent = '生成中...';
         setFeedback('正在调用 AI 生成客户汇报口径的新闻总结...');
         try {
@@ -3240,18 +3289,30 @@ http://127.0.0.1:8000</div>
           if (!response.ok || !payload.ok) {
             throw new Error(payload.error || '生成新闻总结失败');
           }
-          if (newsSummaryText instanceof HTMLTextAreaElement) {
-            newsSummaryText.value = payload.text || '';
-          }
           latestNewsSummaryFilename = payload.filename || '';
+          latestNewsSummaryExcelUrl = payload.excel_download_url || '';
+          latestNewsSummaryText = payload.text || '';
+          latestNewsSummaryHtml = payload.html || '';
+          latestNewsSummaryHtmlUrl = payload.html_download_url || '';
+          if (newsSummaryHtmlPreview instanceof HTMLElement) {
+            newsSummaryHtmlPreview.innerHTML = latestNewsSummaryHtml || '';
+          }
           if (newsSummaryPanel instanceof HTMLElement) {
             newsSummaryPanel.classList.remove('hidden');
           }
           if (newsSummaryMeta instanceof HTMLElement) {
             const stats = payload.stats || {};
             const failedRows = Number.parseInt(stats.failed_row_count || '0', 10);
-            newsSummaryMeta.textContent = failedRows > 0
-              ? `已生成，${failedRows} 条使用兜底摘要，需人工复核。`
+            const bodyFailed = Number.parseInt(stats.article_fetch_failed_count || '0', 10);
+            const needsReview = Number.parseInt(stats.summary_needs_review_count || '0', 10);
+            const unresolved = Number.parseInt(stats.unresolved_source_url_count || '0', 10);
+            const warnings = [];
+            if (failedRows > 0) warnings.push(`${failedRows} 条 AI 兜底`);
+            if (unresolved > 0) warnings.push(`${unresolved} 条未解析到原媒体链接`);
+            if (bodyFailed > 0) warnings.push(`${bodyFailed} 条原文页面无法抓取`);
+            if (needsReview > 0) warnings.push(`${needsReview} 条需复核`);
+            newsSummaryMeta.textContent = warnings.length
+              ? `已生成，${warnings.join('，')}。`
               : `已生成 ${payload.matching_rows || 0} 条新闻总结。`;
           }
           const stats = payload.stats || {};
@@ -3273,30 +3334,25 @@ http://127.0.0.1:8000</div>
         }
       });
     }
-    if (newsSummaryCopyButton instanceof HTMLButtonElement) {
-      newsSummaryCopyButton.addEventListener('click', async () => {
-        if (!(newsSummaryText instanceof HTMLTextAreaElement) || !newsSummaryText.value.trim()) {
-          setFeedback('暂无可复制的新闻总结。');
-          return;
-        }
-        try {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(newsSummaryText.value);
-          } else {
-            newsSummaryText.focus();
-            newsSummaryText.select();
-            document.execCommand('copy');
-          }
-          setFeedback('新闻总结已复制。');
-        } catch (error) {
-          setFeedback('复制失败，请手动选中文本复制。');
+    if (newsSummaryCopyRichButton instanceof HTMLButtonElement) {
+      newsSummaryCopyRichButton.addEventListener('click', () => {
+        copyNewsSummaryRichText();
+      });
+    }
+    if (newsSummaryDownloadExcelButton instanceof HTMLButtonElement) {
+      newsSummaryDownloadExcelButton.addEventListener('click', () => {
+        downloadNewsSummaryExcel();
+        if (latestNewsSummaryExcelUrl) {
+          setFeedback('新闻总结 Excel 已开始下载。');
         }
       });
     }
-    if (newsSummaryDownloadButton instanceof HTMLButtonElement) {
-      newsSummaryDownloadButton.addEventListener('click', () => {
-        downloadNewsSummaryText();
-        setFeedback('新闻总结 TXT 已开始下载。');
+    if (newsSummaryDownloadHtmlButton instanceof HTMLButtonElement) {
+      newsSummaryDownloadHtmlButton.addEventListener('click', () => {
+        downloadNewsSummaryHtml();
+        if (latestNewsSummaryHtmlUrl) {
+          setFeedback('新闻总结 HTML 已开始下载。');
+        }
       });
     }
     if (manualArticleReset instanceof HTMLButtonElement) {

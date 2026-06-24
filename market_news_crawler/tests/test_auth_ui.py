@@ -96,13 +96,17 @@ class AuthUiTest(unittest.TestCase):
         )
         self.assertEqual(setup_response.status_code, 200)
         html = setup_response.get_data(as_text=True)
-        self.assertIn("普通用户模式", html)
+        self.assertIn("配置 AI、开始抓取、查看新闻", html)
         self.assertIn("AI 配置", html)
         self.assertIn("新闻抓取", html)
         self.assertIn("新闻查看", html)
         self.assertIn("添加新闻", html)
         self.assertIn("导出材料", html)
         self.assertIn("请先填写 AI API 配置", html)
+        self.assertIn('id="user-date-mode"', html)
+        self.assertIn('name="date_mode"', html)
+        self.assertIn('id="user-start-date"', html)
+        self.assertIn('id="user-end-date"', html)
         self.assertNotIn("国家管理", html)
         self.assertNotIn("来源管理", html)
 
@@ -342,6 +346,32 @@ class AuthUiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual([row["article_id"] for row in captured["rows"]], ["article-1"])
 
+    def test_news_summary_download_serves_only_generated_summary_files(self) -> None:
+        client = web_app.app.test_client()
+        self.login_client(client)
+        original_dir = web_app.NEWS_SUMMARY_OUTPUT_DIR
+        web_app.NEWS_SUMMARY_OUTPUT_DIR = Path(self._tmpdir.name) / "summaries"
+        web_app.NEWS_SUMMARY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        self.addCleanup(lambda: setattr(web_app, "NEWS_SUMMARY_OUTPUT_DIR", original_dir))
+
+        output_file = web_app.NEWS_SUMMARY_OUTPUT_DIR / "news_summary_test.xlsx"
+        output_file.write_bytes(b"fake-xlsx")
+        html_file = web_app.NEWS_SUMMARY_OUTPUT_DIR / "news_summary_test.html"
+        html_file.write_text("<html>ok</html>", encoding="utf-8")
+
+        ok_response = client.get("/api/articles/news-summary/download/news_summary_test.xlsx")
+        self.assertEqual(ok_response.status_code, 200)
+        self.assertEqual(ok_response.data, b"fake-xlsx")
+        ok_response.close()
+
+        html_response = client.get("/api/articles/news-summary/download/news_summary_test.html")
+        self.assertEqual(html_response.status_code, 200)
+        self.assertIn(b"<html>ok</html>", html_response.data)
+        html_response.close()
+
+        blocked_response = client.get("/api/articles/news-summary/download/..%2Fsettings.json")
+        self.assertEqual(blocked_response.status_code, 400)
+
     def test_selected_article_generation_requires_at_least_one_article(self) -> None:
         client = web_app.app.test_client()
         self.login_client(client)
@@ -369,12 +399,22 @@ class AuthUiTest(unittest.TestCase):
         raw = template_path.read_bytes()
         self.assertFalse(raw.startswith(b"\xef\xbb\xbf"))
         text = raw.decode("utf-8")
-        self.assertIn("普通用户模式", text)
+        self.assertIn("配置 AI、开始抓取、查看新闻", text)
         self.assertIn("添加新闻到当前批次", text)
         self.assertIn("全选", text)
         self.assertIn("取消全选", text)
         self.assertIn("selected_article_ids", text)
         self.assertIn("user-manual-details", text)
+        self.assertIn("user-date-mode", text)
+        self.assertIn("user-start-date", text)
+        self.assertIn("user-end-date", text)
+        self.assertIn("syncUserDateModeFields", text)
+        self.assertNotIn('name="date_mode" value="days"', text)
+        self.assertNotIn("下载 TXT", text)
+        self.assertNotIn("复制全文", text)
+        self.assertNotIn("user-summary-text", text)
+        self.assertIn("复制富文本", text)
+        self.assertIn("下载 HTML", text)
         self.assertIn("chip.sentiment-positive", text)
         self.assertIn('class="js-user-article-select"', text)
         for marker in ("鏅", "閫", "瀵", "鍥", "绛", "锛"):

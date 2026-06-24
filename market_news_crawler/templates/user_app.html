@@ -92,7 +92,6 @@
     .chip.sentiment-positive{background:var(--success-soft);color:var(--success)}
     .chip.sentiment-neutral{background:var(--neutral-chip);color:var(--text-soft)}
     .chip.sentiment-negative{background:var(--danger-soft);color:var(--danger)}
-    .summary-panel textarea{min-height:240px;line-height:1.65}
     .manual-form{display:grid;gap:12px}
     .manual-hint{font-size:13px;color:var(--muted);line-height:1.6}
     .manual-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -112,7 +111,7 @@
     <div class="hero" id="user-overview-section">
       <div>
         <h1>{{ app_title }}</h1>
-        <div class="muted">普通用户模式：配置 AI、开始抓取、查看新闻，并基于已选新闻导出客户材料。</div>
+        <div class="muted">配置 AI、开始抓取、查看新闻，并基于已选新闻导出客户材料。</div>
       </div>
       <div class="top-actions">
         <a class="mini-btn" href="{{ url_for('developer', country_code=selected_country_code) }}">开发者模式</a>
@@ -180,12 +179,24 @@
               {% endfor %}
             </select>
           </label>
-          <label>时间范围
-            <select name="days">
+          <label>时间类型
+            <select name="date_mode" id="user-date-mode">
+              <option value="days" {% if news_form_state.date_mode == 'days' %}selected{% endif %}>最近 N 天</option>
+              <option value="range" {% if news_form_state.date_mode == 'range' %}selected{% endif %}>指定日期范围</option>
+            </select>
+          </label>
+          <label id="user-days-field">最近天数
+            <select name="days" id="user-days-input">
               {% for day in [7, 14, 30, 60, 90] %}
               <option value="{{ day }}" {% if news_form_state.days == day|string %}selected{% endif %}>最近 {{ day }} 天</option>
               {% endfor %}
             </select>
+          </label>
+          <label class="hidden" id="user-start-date-field">开始日期
+            <input type="date" name="start_date" id="user-start-date" value="{{ news_form_state.start_date }}">
+          </label>
+          <label class="hidden" id="user-end-date-field">结束日期
+            <input type="date" name="end_date" id="user-end-date" value="{{ news_form_state.end_date }}">
           </label>
           <label>输出语言
             <select name="translate_to">
@@ -194,7 +205,6 @@
             </select>
           </label>
         </div>
-        <input type="hidden" name="date_mode" value="days">
         <input type="hidden" name="output_dir" value="outputs">
         <input type="hidden" name="recall_mode" value="balanced">
         <input type="hidden" name="survey_filter_mode" value="ai">
@@ -376,11 +386,12 @@
       </div>
       <div class="summary-panel hidden" id="user-summary-panel" style="margin-top:14px">
         <div class="actions">
-          <button class="mini-btn" type="button" id="user-summary-copy">复制全文</button>
-          <button class="mini-btn" type="button" id="user-summary-download">下载 TXT</button>
+          <button class="mini-btn" type="button" id="user-summary-copy-rich">复制富文本</button>
+          <button class="mini-btn" type="button" id="user-summary-download-excel">下载 Excel</button>
+          <button class="mini-btn" type="button" id="user-summary-download-html">下载 HTML</button>
           <span class="muted" id="user-summary-meta"></span>
         </div>
-        <textarea id="user-summary-text" readonly></textarea>
+        <div class="article-note" id="user-summary-html-preview" style="margin-top:12px;"></div>
       </div>
     </section>
   </div>
@@ -394,10 +405,17 @@
     const jobProgress = document.getElementById('user-job-progress');
     const jobLabel = document.getElementById('user-job-label');
     const jobTime = document.getElementById('user-job-time');
+    const userDateMode = document.getElementById('user-date-mode');
+    const userDaysField = document.getElementById('user-days-field');
+    const userDaysInput = document.getElementById('user-days-input');
+    const userStartDateField = document.getElementById('user-start-date-field');
+    const userEndDateField = document.getElementById('user-end-date-field');
+    const userStartDateInput = document.getElementById('user-start-date');
+    const userEndDateInput = document.getElementById('user-end-date');
     const exportFeedback = document.getElementById('user-export-feedback');
     const summaryPanel = document.getElementById('user-summary-panel');
-    const summaryText = document.getElementById('user-summary-text');
     const summaryMeta = document.getElementById('user-summary-meta');
+    const summaryHtmlPreview = document.getElementById('user-summary-html-preview');
     const userManualForm = document.getElementById('user-manual-article-form');
     const userManualFeedback = document.getElementById('user-manual-feedback');
     const userManualAiFill = document.getElementById('user-manual-ai-fill');
@@ -422,10 +440,25 @@
     const initialApiConfigured = {{ 'true' if ai_configured else 'false' }};
     const lastRunSuccessTimeKey = 'marketNewsCrawlerUserLastRunSuccessTime';
     let latestSummaryFilename = '';
+    let latestSummaryExcelUrl = '';
+    let latestSummaryHtml = '';
+    let latestSummaryText = '';
+    let latestSummaryHtmlUrl = '';
     let userApiConfigured = initialApiConfigured;
 
     function setText(node, value) {
       if (node) node.textContent = value || '';
+    }
+
+    function syncUserDateModeFields() {
+      if (!(userDateMode instanceof HTMLSelectElement)) return;
+      const isRange = userDateMode.value === 'range';
+      if (userDaysField) userDaysField.classList.toggle('hidden', isRange);
+      if (userStartDateField) userStartDateField.classList.toggle('hidden', !isRange);
+      if (userEndDateField) userEndDateField.classList.toggle('hidden', !isRange);
+      if (userDaysInput instanceof HTMLSelectElement) userDaysInput.disabled = isRange;
+      if (userStartDateInput instanceof HTMLInputElement) userStartDateInput.disabled = !isRange;
+      if (userEndDateInput instanceof HTMLInputElement) userEndDateInput.disabled = !isRange;
     }
 
     function formatSeconds(seconds) {
@@ -683,6 +716,10 @@
     if (apiKeyInput instanceof HTMLInputElement) apiKeyInput.addEventListener('input', syncApiHiddenInputs);
     if (apiModelInput instanceof HTMLInputElement) apiModelInput.addEventListener('input', syncApiHiddenInputs);
     if (apiEditToggle) apiEditToggle.addEventListener('click', showApiConfigEditor);
+    if (userDateMode instanceof HTMLSelectElement) {
+      userDateMode.addEventListener('change', syncUserDateModeFields);
+    }
+    syncUserDateModeFields();
 
     if (apiTestButton) {
       apiTestButton.addEventListener('click', async () => {
@@ -898,15 +935,31 @@
         const selection = buildSelectedArticleFormData();
         if (!selection) return;
         setText(exportFeedback, `正在基于 ${selection.selectedCount} 条已选新闻生成新闻总结...`);
+        latestSummaryExcelUrl = '';
+        latestSummaryHtml = '';
+        latestSummaryText = '';
+        latestSummaryHtmlUrl = '';
         try {
           const response = await fetch('/api/articles/news-summary', { method: 'POST', body: selection.formData });
           const payload = await parseJsonResponse(response);
           if (!response.ok || !payload.ok) throw new Error(payload.error || '生成新闻总结失败');
           latestSummaryFilename = payload.filename || 'news_summary.txt';
-          if (summaryText) summaryText.value = payload.text || '';
+          latestSummaryExcelUrl = payload.excel_download_url || '';
+          latestSummaryHtml = payload.html || '';
+          latestSummaryText = payload.text || '';
+          latestSummaryHtmlUrl = payload.html_download_url || '';
+          if (summaryHtmlPreview) summaryHtmlPreview.innerHTML = latestSummaryHtml || '';
           if (summaryPanel) summaryPanel.classList.remove('hidden');
           const failedRows = Number.parseInt((payload.stats || {}).failed_row_count || '0', 10);
-          setText(summaryMeta, failedRows > 0 ? `${failedRows} 条兜底摘要需要复核。` : `已生成 ${payload.matching_rows || selection.selectedCount} 条摘要。`);
+          const bodyFailed = Number.parseInt((payload.stats || {}).article_fetch_failed_count || '0', 10);
+          const needsReview = Number.parseInt((payload.stats || {}).summary_needs_review_count || '0', 10);
+          const unresolved = Number.parseInt((payload.stats || {}).unresolved_source_url_count || '0', 10);
+          const warnings = [];
+          if (failedRows > 0) warnings.push(`${failedRows} 条 AI 兜底`);
+          if (unresolved > 0) warnings.push(`${unresolved} 条未解析到原媒体链接`);
+          if (bodyFailed > 0) warnings.push(`${bodyFailed} 条原文页面无法抓取`);
+          if (needsReview > 0) warnings.push(`${needsReview} 条需复核`);
+          setText(summaryMeta, warnings.length ? `已生成，${warnings.join('，')}。` : `已生成 ${payload.matching_rows || selection.selectedCount} 条摘要。`);
           setText(exportFeedback, '新闻总结已生成。');
         } catch (error) {
           setText(exportFeedback, error instanceof Error ? error.message : '生成新闻总结失败');
@@ -914,38 +967,60 @@
       });
     }
 
-    if (document.getElementById('user-summary-copy')) {
-      document.getElementById('user-summary-copy').addEventListener('click', async () => {
-        if (!summaryText || !summaryText.value.trim()) {
+    if (document.getElementById('user-summary-copy-rich')) {
+      document.getElementById('user-summary-copy-rich').addEventListener('click', async () => {
+        if (!latestSummaryHtml && !latestSummaryText.trim()) {
           setText(exportFeedback, '没有可复制的内容。');
           return;
         }
         try {
-          await navigator.clipboard.writeText(summaryText.value);
-          setText(exportFeedback, '新闻总结已复制。');
+          if (latestSummaryHtml && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                'text/html': new Blob([latestSummaryHtml], { type: 'text/html' }),
+                'text/plain': new Blob([latestSummaryText], { type: 'text/plain' }),
+              }),
+            ]);
+            setText(exportFeedback, '新闻总结富文本已复制。');
+            return;
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(latestSummaryText);
+          }
+          setText(exportFeedback, '浏览器不支持富文本，已复制纯文本。');
         } catch (error) {
-          summaryText.focus();
-          summaryText.select();
-          document.execCommand('copy');
-          setText(exportFeedback, '新闻总结已复制。');
+          setText(exportFeedback, '复制失败，请手动复制预览区内容。');
         }
       });
     }
 
-    if (document.getElementById('user-summary-download')) {
-      document.getElementById('user-summary-download').addEventListener('click', () => {
-        if (!summaryText || !summaryText.value.trim()) {
-          setText(exportFeedback, '没有可下载的内容。');
+    if (document.getElementById('user-summary-download-excel')) {
+      document.getElementById('user-summary-download-excel').addEventListener('click', () => {
+        if (!latestSummaryExcelUrl) {
+          setText(exportFeedback, '请先生成新闻总结，再下载 Excel。');
           return;
         }
-        const blob = new Blob([summaryText.value], { type: 'text/plain;charset=utf-8' });
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = latestSummaryFilename || 'news_summary.txt';
+        link.href = latestSummaryExcelUrl;
         document.body.appendChild(link);
         link.click();
         link.remove();
-        window.setTimeout(() => URL.revokeObjectURL(link.href), 500);
+        setText(exportFeedback, '新闻总结 Excel 已开始下载。');
+      });
+    }
+
+    if (document.getElementById('user-summary-download-html')) {
+      document.getElementById('user-summary-download-html').addEventListener('click', () => {
+        if (!latestSummaryHtmlUrl) {
+          setText(exportFeedback, '请先生成新闻总结，再下载 HTML。');
+          return;
+        }
+        const link = document.createElement('a');
+        link.href = latestSummaryHtmlUrl;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setText(exportFeedback, '新闻总结 HTML 已开始下载。');
       });
     }
 

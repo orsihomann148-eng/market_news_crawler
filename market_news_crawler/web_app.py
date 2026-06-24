@@ -27,7 +27,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from flask import Flask, Response, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, Response, jsonify, redirect, render_template, request, send_file, session, url_for
 from openpyxl import load_workbook
 
 import article_browser as article_browser_utils
@@ -4728,7 +4728,41 @@ def api_generate_article_news_summary():
             message = f'{message}: {detail}'
         return jsonify({'ok': False, 'error': message, 'detail': traceback.format_exc()}), 500
 
-    return jsonify({'ok': True, 'text': result.text, 'filename': result.output_path.name, 'matching_rows': matching_rows, 'stats': result.stats})
+    excel_output_path = getattr(result, 'excel_output_path', None)
+    excel_filename = excel_output_path.name if isinstance(excel_output_path, Path) else ''
+    excel_download_url = url_for('api_download_generated_news_summary', filename=excel_filename) if excel_filename else ''
+    html_output_path = getattr(result, 'html_output_path', None)
+    html_filename = html_output_path.name if isinstance(html_output_path, Path) else ''
+    html_download_url = url_for('api_download_generated_news_summary', filename=html_filename) if html_filename else ''
+    return jsonify({
+        'ok': True,
+        'text': result.text,
+        'html': getattr(result, 'html', '') or '',
+        'filename': result.output_path.name,
+        'excel_filename': excel_filename,
+        'excel_download_url': excel_download_url,
+        'html_filename': html_filename,
+        'html_download_url': html_download_url,
+        'matching_rows': matching_rows,
+        'stats': result.stats,
+    })
+
+
+@app.route('/api/articles/news-summary/download/<path:filename>', methods=['GET'])
+def api_download_generated_news_summary(filename: str):
+    safe_name = Path(filename or '').name
+    if not safe_name or safe_name != filename or Path(safe_name).suffix.lower() not in {'.txt', '.xlsx', '.html'}:
+        return jsonify({'ok': False, 'error': '无效的下载文件名。'}), 400
+    path = (NEWS_SUMMARY_OUTPUT_DIR / safe_name).resolve()
+    allowed_dir = NEWS_SUMMARY_OUTPUT_DIR.resolve()
+    if allowed_dir not in path.parents or not path.exists() or not path.is_file():
+        return jsonify({'ok': False, 'error': '文件不存在或不可下载。'}), 404
+    mimetype = (
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        if path.suffix.lower() == '.xlsx'
+        else ('text/html; charset=utf-8' if path.suffix.lower() == '.html' else 'text/plain; charset=utf-8')
+    )
+    return send_file(path, as_attachment=True, download_name=path.name, mimetype=mimetype)
 
 @app.route('/api/articles/manual/suggest', methods=['POST'])
 def api_suggest_manual_article():
